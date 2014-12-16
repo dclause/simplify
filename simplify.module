@@ -390,8 +390,14 @@ function simplify_get_fields($type) {
         $fields['path'] = t('URL path settings');
       }
       // Third-party modules
+      if (module_exists('domain')) {
+        $fields['domain'] = t('Domain access');
+      }
       if (module_exists('metatag')) {
         $fields['metatag'] = t('Meta tags');
+      }
+      if (module_exists('node_noindex')) {
+        $fields['node_noindex'] = t('Node noindex');
       }
       if (module_exists('redirect')) {
         $fields['redirect'] = t('URL redirects');
@@ -485,6 +491,11 @@ function simplify_hide_field($field, &$form) {
       $form['contact']['#access'] = FALSE;
     break;
 
+    // Domain access
+    case 'domain':
+      $form['domain']['#access'] = FALSE;
+    break;
+
     // Text format selection
     case 'format':
       $js = 'jQuery(document).ready(function($) {
@@ -501,6 +512,11 @@ function simplify_hide_field($field, &$form) {
     // Meta tags
     case 'metatag':
       $form['metatags']['#access'] = FALSE;
+    break;
+
+    // Node noindex
+    case 'node_noindex':
+      $form['node_noindex']['#access'] = FALSE;
     break;
 
     // Publishing options
