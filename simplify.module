@@ -393,6 +393,9 @@ function simplify_get_fields($type) {
       if (module_exists('domain')) {
         $fields['domain'] = t('Domain access');
       }
+      if (module_exists('entity_translation') && entity_translation_enabled('node')) {
+        $fields['entity_translation'] = t('Entity translation');
+      }
       if (module_exists('metatag')) {
         $fields['metatag'] = t('Meta tags');
       }
@@ -494,6 +497,11 @@ function simplify_hide_field($field, &$form) {
     // Domain access
     case 'domain':
       $form['domain']['#access'] = FALSE;
+    break;
+
+    // Entity translation
+    case 'entity_translation':
+      $form['translation']['#access'] = FALSE;
     break;
 
     // Text format selection
