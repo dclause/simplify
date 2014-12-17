@@ -83,6 +83,14 @@ function simplify_menu() {
  * Simplify global configuration form.
  */
 function simplify_global_configuration_form($form, &$form_state) {
+  // User 1 permission
+  $form['simplify_user1'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide fields from User 1'),
+    '#description' => t("By default, Drupal gives User 1 <em>all</em> permissions (including Simplify's <em>View hidden fields</em> permission). This means that User 1 will always be able to view all hidden fields (and is by design).<br>Check this box to override this functionality and hide fields from User 1. NOTE: As this option overrides default Drupal behaviour, it should be used sparingly and only when you fully understand the consequences."),
+    '#default_value' => variable_get('simplify_user1', 0),
+  );
+
   // Nodes
   $form['nodes'] = array(
     '#type' => 'fieldset',
@@ -356,7 +364,8 @@ function simplify_form_block_admin_configure_alter(&$form, &$form_state, $form_i
  * Hide fields from all users without the 'View hidden fields' permission.
  */
 function simplify_hide_fields($fields, &$form) {
-  if (!empty($fields) && !user_access('view hidden fields')) {
+  global $user;
+  if (!empty($fields) && (!user_access('view hidden fields') || ($user->uid == 1 && variable_get('simplify_user1', 0)))) {
     foreach ($fields as $field) {
       simplify_hide_field($field, $form);
     }
