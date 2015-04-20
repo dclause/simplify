@@ -515,10 +515,7 @@ function simplify_hide_field($field, &$form) {
 
     // Text format selection
     case 'format':
-      $js = 'jQuery(document).ready(function($) {
-        $("#' . $form['#id'] . ' fieldset.filter-wrapper").hide();
-      });';
-      drupal_add_js($js, 'inline');
+      simplify_hide_text_format_elements($form);
     break;
 
     // Menu settings
@@ -575,5 +572,33 @@ function simplify_hide_field($field, &$form) {
 
   // Allow other modules to alter the way fields are hidden
   drupal_alter('simplify_hide_field', $form, $field);
+}
+
+/**
+ * Recurse through the provided form and hide any text_format elements.
+ */
+function simplify_hide_text_format_elements(&$form) {
+  foreach (element_children($form) as $key) {
+    if (!isset($form[$key]['#type'])) {
+      simplify_hide_text_format_elements($form[$key]);
+    }
+    else {
+      if ($form[$key]['#type'] == 'container' && isset($form[$key]['#language'])) {
+        simplify_hide_text_format_elements($form[$key][$form[$key]['#language']]);
+      }
+      elseif ($form[$key]['#type'] == 'text_format') {
+        $form[$key]['#after_build'][] = 'simplify_hide_text_format_element';
+      }
+    }
+  }
+}
+
+/**
+ * Hide a given text_format element.
+ */
+function simplify_hide_text_format_element($element) {
+  $element['format']['#access'] = FALSE;
+
+  return $element;
 }
 
