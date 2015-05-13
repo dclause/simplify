@@ -663,7 +663,7 @@ function simplify_hide_text_format_elements(&$form) {
       simplify_hide_text_format_elements($form[$key]);
     }
     else {
-      if ($form[$key]['#type'] == 'container' && isset($form[$key]['#language'])) {
+      if ($form[$key]['#type'] == 'container' && isset($form[$key]['#language']) && !empty($form[$key][$form[$key]['#language']])) {
         simplify_hide_text_format_elements($form[$key][$form[$key]['#language']]);
       }
       elseif ($form[$key]['#type'] == 'text_format') {
@@ -677,7 +677,9 @@ function simplify_hide_text_format_elements(&$form) {
  * Hide a given text_format element.
  */
 function simplify_hide_text_format_element($element) {
-  $element['format']['#access'] = FALSE;
+  if (!empty($element['format'])) {
+    $element['format']['#access'] = FALSE;
+  }
 
   return $element;
 }
