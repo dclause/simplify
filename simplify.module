@@ -498,6 +498,7 @@ function simplify_get_fields($type) {
     case 'users':
       // Drupal core
       $fields['format'] = t('Text format selection');
+      $fields['status'] = t('Status (blocked/active)');
       if (module_exists('contact')) {
         $fields['contact'] = t('Contact settings');
       }
@@ -641,6 +642,11 @@ function simplify_hide_field($field, &$form) {
     // Revision information
     case 'revision':
       $form['revision_information']['#access'] = FALSE;
+    break;
+
+    // Status
+    case 'status':
+      $form['account']['status']['#access'] = FALSE;
     break;
 
     // XML sitemap
