@@ -12,7 +12,7 @@ namespace Drupal\simplify\Tests;
 use Drupal\simpletest\WebTestBase;
 
 /**
- * Test simplify settings.
+ * Test Simplify module global settings.
  *
  * @group Simplify
  *
@@ -32,8 +32,8 @@ class GlobalSettingsTest extends WebTestBase {
    */
   public static function getInfo() {
     return array(
-      'name' => 'Simplify settings test.',
-      'description' => 'Test the Simplify module settings page.',
+      'name' => 'Simplify global settings test.',
+      'description' => 'Test the Simplify module global settings page.',
       'group' => 'Simplify',
     );
   }
@@ -56,34 +56,48 @@ class GlobalSettingsTest extends WebTestBase {
     $this->drupalGet('/admin/config/user-interface/simplify');
 
     /* -------------------------------------------------------.
-     * 1/ Check everything is there but unchecked.
+     * 1/ Check only basic options are there but unchecked.
      */
 
     // User 1.
+    $this->assertField('edit-simplify-user1', 'User 1 is here.');
     $this->assertNoFieldChecked('edit-simplify-user1', 'User 1 is unchecked.');
     // Node globals.
-    $this->assertNoFieldChecked('edit-simplify-nodes-global-author', 'Author option is unchecked');
-    $this->assertNoFieldChecked('edit-simplify-nodes-global-format', 'Format option is unchecked.');
-    $this->assertNoFieldChecked('edit-simplify-nodes-global-options', 'Publishing option is unchecked.');
-    $this->assertNoFieldChecked('edit-simplify-nodes-global-revision', 'Revision option is unchecked.');
+    $this->assertNoRaw('Nodes', 'Nodes options are not available.');
+    $this->assertNoField('edit-simplify-nodes-global-author', 'Author option is not available');
     // User globals.
-    $this->assertNoFieldChecked('edit-simplify-users-global-format', 'Text selection option is unchecked.');
-    $this->assertNoFieldChecked('edit-simplify-users-global-status', 'Status option is unchecked.');
+    $this->assertRaw('Users', 'Users options are not available.');
+    $this->assertNoFieldChecked('edit-simplify-users-global-format', 'Text selection option is not available.');
     // Taxonomy is not here.
     $this->assertNoRaw('Taxonomy', 'Taxonomy options are not available.');
     $this->assertNoField('edit-simplify-taxonomy-global-format', 'Text selection from taxonomy option is not available.');
+    // Blocks is not here.
+    $this->assertNoRaw('Block', 'Blocks options are now available.');
+    $this->assertNoField('edit-simplify-blocks-global-format', 'Text format option is not available.');
 
     /* -------------------------------------------------------.
      * 2/ Check optionnal options are added if modules becomes available.
      */
 
-    $this->container->get('module_installer')->install(array('book', 'taxonomy', 'block', 'comment', 'menu_ui', 'path'), TRUE);
+    $this->container->get('module_installer')->install(array('node', 'book', 'taxonomy', 'block', 'comment', 'menu_ui', 'path'), TRUE);
     $this->drupalGet('/admin/config/user-interface/simplify');
-    // Taxonomy.
+    // Node globals.
+    $this->assertRaw('Nodes', 'Nodes options are now available.');
+    $this->assertNoFieldChecked('edit-simplify-nodes-global-author', 'Author option is unchecked');
+    $this->assertNoFieldChecked('edit-simplify-nodes-global-format', 'Format option is unchecked.');
+    $this->assertNoFieldChecked('edit-simplify-nodes-global-options', 'Publishing option is unchecked.');
+    $this->assertNoFieldChecked('edit-simplify-nodes-global-revision', 'Revision option is unchecked.');
+    // User globals.
+    $this->assertRaw('Users', 'Users options are now available.');
+    $this->assertNoFieldChecked('edit-simplify-users-global-format', 'Text selection option is unchecked.');
+    $this->assertNoFieldChecked('edit-simplify-users-global-status', 'Status option is unchecked.');
+    // Taxonomy is not here.
+    $this->assertRaw('Taxonomy', 'Taxonomy options are now available.');
     $this->assertNoFieldChecked('edit-simplify-taxonomy-global-format', 'Text selection option is unchecked.');
     $this->assertNoFieldChecked('edit-simplify-taxonomy-global-relations', 'Relation option is unchecked.');
     $this->assertNoFieldChecked('edit-simplify-taxonomy-global-relations', 'Url alias is unchecked.');
-    // Blocks.
+    // Blocks is not here.
+    $this->assertRaw('Block', 'Blocks options are now available.');
     $this->assertNoFieldChecked('edit-simplify-blocks-global-format', 'Text format option is unchecked.');
 
     /*  -------------------------------------------------------.
