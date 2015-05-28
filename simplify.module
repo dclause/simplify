@@ -1,27 +1,27 @@
 <?php
 
 use Drupal\Core\Render\Element;
+use Drupal\Core\Config\ImmutableConfig;
 
 /**
  * Implements hook_form_FORM_ID_alter() for node_type_form.
  */
 function simplify_form_node_type_form_alter(&$form, &$form_state, $form_id) {
-  $type = $form['#node_type'];
-  $simplify_config = \Drupal::config('simplify.global');
+  $type = $form['type'];
 
   // Nodes
   $form['simplify'] = array(
     '#type' => 'details',
     '#title' => t('Simplify'),
-    '#description' => t("These fields will be hidden from <em>@type</em> node forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $type->name, '@global' => \Drupal::url('simplify.admin'))),
+    '#description' => t("These fields will be hidden from <em>@type</em> node forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $form['name']['#default_value'], '@global' => \Drupal::url('simplify.admin'))),
     '#access' => \Drupal::currentUser()->hasPermission('administer simplify'),
     '#group' => 'additional_settings',
   );
   $form['simplify']['simplify_nodes'] = array(
     '#type' => 'checkboxes',
-    '#title' => t('Hide'),
+    '#title' => t('Simplify the following options'),
     '#options' => simplify_get_fields('nodes'),
-    '#default_value' => $simplify_config->get('simplify_nodes_' . $type->type),
+    '#default_value' => simplify_get_config_value('simplify_nodes_' . $type['#default_value']),
     '#after_build' => array('simplify_disable_globally_hidden_checkboxes'),
   );
 
@@ -39,7 +39,7 @@ function simplify_form_node_type_form_alter(&$form, &$form_state, $form_id) {
       '#type' => 'checkboxes',
       '#title' => t('Hide'),
       '#options' => simplify_get_fields('comments'),
-      '#default_value' => $simplify_config->get('simplify_comments_' . $type->type),
+      '#default_value' => simplify_get_config_value('simplify_comments_' . $type['#default_value']),
       '#after_build' => array('simplify_disable_globally_hidden_checkboxes'),
     );
   }
@@ -65,7 +65,7 @@ function simplify_form_taxonomy_form_vocabulary_alter(&$form, &$form_state, $for
     '#type' => 'checkboxes',
     '#title' => t('Hide'),
     '#options' => simplify_get_fields('taxonomy'),
-    '#default_value' => $simplify_config->get('simplify_taxonomy_' . $vocabulary->machine_name),
+    '#default_value' => simplify_get_config_value('simplify_taxonomy_' . $vocabulary->machine_name),
     '#after_build' => array('simplify_disable_globally_hidden_checkboxes'),
   );
 
@@ -107,7 +107,7 @@ function simplify_form_profile2_type_form_alter(&$form, &$form_state, $form_id) 
     '#type' => 'checkboxes',
     '#title' => t('Hide'),
     '#options' => simplify_get_fields('profiles'),
-    '#default_value' => $simplify_config->get('simplify_profiles_' . $form['type']['#default_value']),
+    '#default_value' => simplify_get_config_value('simplify_profiles_' . $form['type']['#default_value']),
     '#after_build' => array('simplify_disable_globally_hidden_checkboxes'),
   );
 
@@ -136,10 +136,10 @@ function simplify_disable_globally_hidden_checkboxes($element, &$form_state) {
   $simplify_config = \Drupal::config('simplify.global');
 
   // Get globally hidden fields
-  $global_fields = $simplify_config->get($element['#name'] . '_global');
+  $global_fields = simplify_get_config_value($element['#name'] . '_global');
 
   // Disable any globally hidden fields
-  foreach (Element::child($element) as $field) {
+  foreach (Element::children($element) as $field) {
     if (in_array($field, $global_fields)) {
       $element[$field]['#checked'] = TRUE;
       $element[$field]['#attributes']['disabled'] = 'disabled';
@@ -157,8 +157,8 @@ function simplify_form_node_form_alter(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
 
   // Get array of fields to hide
-  $global_fields = $simplify_config->get('simplify_nodes_global');
-  $type_fields = $simplify_config->get('simplify_nodes_' . $node->type);
+  $global_fields = simplify_get_config_value('simplify_nodes_global');
+  $type_fields = simplify_get_config_value('simplify_nodes_' . $node->type);
   $fields = array_merge($global_fields, $type_fields);
 
   // Hide fields
@@ -170,7 +170,7 @@ function simplify_form_node_form_alter(&$form, &$form_state, $form_id) {
  */
 function simplify_form_user_profile_form_alter(&$form, &$form_state, $form_id) {
   // Get array of fields to hide
-  $fields = $simplify_config->get('simplify_users_global');
+  $fields = simplify_get_config_value('simplify_users_global');
 
   // Hide fields
   simplify_hide_fields($fields, $form);
@@ -181,7 +181,7 @@ function simplify_form_user_profile_form_alter(&$form, &$form_state, $form_id) {
  */
 function simplify_form_user_register_form_alter(&$form, &$form_state, $form_id) {
   // Get array of fields to hide
-  $fields = $simplify_config->get('simplify_users_global');
+  $fields = simplify_get_config_value('simplify_users_global');
 
   // Hide fields
   simplify_hide_fields($fields, $form);
@@ -194,8 +194,8 @@ function simplify_form_comment_form_alter(&$form, &$form_state, $form_id) {
   $node = $form['#node'];
 
   // Get array of fields to hide
-  $global_fields = $simplify_config->get('simplify_comments_global');
-  $type_fields = $simplify_config->get('simplify_comments_' . $node->type);
+  $global_fields = simplify_get_config_value('simplify_comments_global');
+  $type_fields = simplify_get_config_value('simplify_comments_' . $node->type);
   $fields = array_merge($global_fields, $type_fields);
 
   // Hide fields
@@ -209,8 +209,8 @@ function simplify_form_taxonomy_form_term_alter(&$form, &$form_state, $form_id) 
   $vocabulary = $form['#vocabulary'];
 
   // Get array of fields to hide
-  $global_fields = $simplify_config->get('simplify_taxonomy_global');
-  $vocabulary_fields = $simplify_config->get('simplify_taxonomy_' . $vocabulary->machine_name);
+  $global_fields = simplify_get_config_value('simplify_taxonomy_global');
+  $vocabulary_fields = simplify_get_config_value('simplify_taxonomy_' . $vocabulary->machine_name);
   $fields = array_merge($global_fields, $vocabulary_fields);
 
   // Hide fields
@@ -222,7 +222,7 @@ function simplify_form_taxonomy_form_term_alter(&$form, &$form_state, $form_id) 
  */
 function simplify_form_block_add_block_form_alter(&$form, &$form_state, $form_id) {
   // Get array of fields to hide
-  $fields = $simplify_config->get('simplify_blocks_global');
+  $fields = simplify_get_config_value('simplify_blocks_global');
 
   // Hide fields
   simplify_hide_fields($fields, $form);
@@ -233,7 +233,7 @@ function simplify_form_block_add_block_form_alter(&$form, &$form_state, $form_id
  */
 function simplify_form_block_admin_configure_alter(&$form, &$form_state, $form_id) {
   // Get array of fields to hide
-  $fields = $simplify_config->get('simplify_blocks_global');
+  $fields = simplify_get_config_value('simplify_blocks_global');
 
   // Hide fields
   simplify_hide_fields($fields, $form);
@@ -251,8 +251,8 @@ function simplify_form_profile2_form_alter(&$form, &$form_state, $form_id) {
   }
 
   // Get array of fields to hide
-  $global_fields = $simplify_config->get('simplify_profiles_global');
-  $type_fields = $simplify_config->get('simplify_profiles_' . $bundle);
+  $global_fields = simplify_get_config_value('simplify_profiles_global');
+  $type_fields = simplify_get_config_value('simplify_profiles_' . $bundle);
   $fields = array_merge($global_fields, $type_fields);
 
   // Hide fields
@@ -272,15 +272,21 @@ function simplify_hide_fields($fields, &$form) {
 }
 
 /**
- * Get an array of fields (by type) that can be hidden.
- */
+   * Get an array of fields (by type) that can be hidden.
+   *
+   * @param string $type
+   *   The category type of fields to build.
+   *
+   * @return array
+   *   An array of cehckbox option fields.
+   */
 function simplify_get_fields($type) {
   $fields = array();
 
   switch ($type) {
-    // Nodes
+    // Nodes.
     case 'nodes':
-      // Drupal core
+      // Drupal core:
       $fields['author'] = t('Authoring information');
       $fields['format'] = t('Text format selection');
       $fields['options'] = t('Publishing options');
@@ -291,13 +297,13 @@ function simplify_get_fields($type) {
       if (\Drupal::moduleHandler()->moduleExists('comment')) {
         $fields['comment'] = t('Comment settings');
       }
-      if (\Drupal::moduleHandler()->moduleExists('menu')) {
+      if (\Drupal::moduleHandler()->moduleExists('menu_ui')) {
         $fields['menu'] = t('Menu settings');
       }
       if (\Drupal::moduleHandler()->moduleExists('path')) {
         $fields['path'] = t('URL path settings');
       }
-      // Third-party modules
+      // Third-party modules:
       if (\Drupal::moduleHandler()->moduleExists('domain')) {
         $fields['domain'] = t('Domain access');
       }
@@ -316,11 +322,11 @@ function simplify_get_fields($type) {
       if (\Drupal::moduleHandler()->moduleExists('xmlsitemap_node')) {
         $fields['xmlsitemap'] = t('XML sitemap');
       }
-    break;
+      break;
 
-    // Users
+      // Users.
     case 'users':
-      // Drupal core
+      // Drupal core:
       $fields['format'] = t('Text format selection');
       $fields['status'] = t('Status (blocked/active)');
       if (\Drupal::moduleHandler()->moduleExists('contact')) {
@@ -329,30 +335,30 @@ function simplify_get_fields($type) {
       if (\Drupal::moduleHandler()->moduleExists('overlay')) {
         $fields['overlay'] = t('Administrative overlay');
       }
-      // Third-party modules
+      // Third-party modules:
       if (\Drupal::moduleHandler()->moduleExists('metatag')) {
         $fields['metatag'] = t('Meta tags');
       }
       if (\Drupal::moduleHandler()->moduleExists('redirect')) {
         $fields['redirect'] = t('URL redirects');
       }
-    break;
+      break;
 
-    // Comments
+      // Comments.
     case 'comments':
-      // Drupal core
+      // Drupal core:
       $fields['format'] = t('Text format selection');
-    break;
+      break;
 
-    // Taxonomy
+      // Taxonomy.
     case 'taxonomy':
-      // Drupal core
+      // Drupal core:
       $fields['format'] = t('Text format selection');
       $fields['relations'] = t('Relations');
       if (\Drupal::moduleHandler()->moduleExists('path')) {
         $fields['path'] = t('URL alias');
       }
-      // Third-party modules
+      // Third-party modules:
       if (\Drupal::moduleHandler()->moduleExists('metatag')) {
         $fields['metatag'] = t('Meta tags');
       }
@@ -362,18 +368,18 @@ function simplify_get_fields($type) {
       if (\Drupal::moduleHandler()->moduleExists('xmlsitemap_taxonomy')) {
         $fields['xmlsitemap'] = t('XML sitemap');
       }
-    break;
+      break;
 
-    // Blocks
+      // Blocks.
     case 'blocks':
-      // Drupal core
+      // Drupal core:
       $fields['format'] = t('Text format selection');
-    break;
+      break;
 
-    // Profiles
+      // Profiles.
     case 'profiles':
       $fields['format'] = t('Text format selection');
-    break;
+      break;
   }
 
   // Allow other modules to alter the array of fields that can be hidden
@@ -512,4 +518,25 @@ function simplify_hide_text_format_element($element) {
   }
 
   return $element;
+}
+
+
+/**
+ * Gets an array representing the configuration form values or empty array
+ * is empty or not applicable.
+ *
+ * @param string $config_type
+ *   The configuration name to be retrieved.
+ * @param object $default
+ *   A default value.
+ *
+ * @return array
+ *   An array representing the configuration or empty array if the
+ *   configuration is not applicable.
+ */
+function simplify_get_config_value($config_name, $default = array()) {
+  $simplify_config = \Drupal::config('simplify.global');
+
+  $value = $simplify_config->get($config_name);
+  return !empty($value) ? $value : $default;
 }
