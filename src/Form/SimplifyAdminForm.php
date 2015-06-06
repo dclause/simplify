@@ -85,7 +85,7 @@ class SimplifyAdminForm extends ConfigFormBase {
       );
       $form['nodes']['simplify_nodes_global'] = array(
         '#type' => 'checkboxes',
-        '#title' => $this->t('Hide'),
+        '#title' => $this->t('Simplify the following options'),
         '#options' => simplify_get_fields('nodes'),
         '#default_value' => _simplify_get_config_value('simplify_nodes_global'),
       );
@@ -101,7 +101,7 @@ class SimplifyAdminForm extends ConfigFormBase {
       );
       $form['users']['simplify_users_global'] = array(
         '#type' => 'checkboxes',
-        '#title' => $this->t('Hide'),
+        '#title' => $this->t('Simplify the following options'),
         '#options' => simplify_get_fields('users'),
         '#default_value' => _simplify_get_config_value('simplify_users_global'),
       );
@@ -112,12 +112,12 @@ class SimplifyAdminForm extends ConfigFormBase {
       $form['comments'] = array(
         '#type' => 'details',
         '#title' => $this->t('Comments'),
-        '#description' => $this->t("These fields will be hidden from <em>all</em> comment forms. Alternatively, to hide fields from comment forms for nodes of a particular content type, edit the content type and configure the hidden fields there."),
+        '#description' => $this->t("These fields will be hidden from <em>all</em> comment forms. Alternatively, to hide fields from comment forms for comments of a particular comment type, edit the comment type and configure the hidden fields there."),
         '#open' => TRUE,
       );
       $form['comments']['simplify_comments_global'] = array(
         '#type' => 'checkboxes',
-        '#title' => $this->t('Hide'),
+        '#title' => $this->t('Simplify the following options'),
         '#options' => simplify_get_fields('comments'),
         '#default_value' => _simplify_get_config_value('simplify_comments_global'),
       );
@@ -133,7 +133,7 @@ class SimplifyAdminForm extends ConfigFormBase {
       );
       $form['taxonomy']['simplify_taxonomies_global'] = array(
         '#type' => 'checkboxes',
-        '#title' => $this->t('Hide'),
+        '#title' => $this->t('Simplify the following options'),
         '#options' => simplify_get_fields('taxonomy'),
         '#default_value' => _simplify_get_config_value('simplify_taxonomies_global'),
       );
@@ -149,7 +149,7 @@ class SimplifyAdminForm extends ConfigFormBase {
       );
       $form['blocks']['simplify_blocks_global'] = array(
         '#type' => 'checkboxes',
-        '#title' => $this->t('Hide'),
+        '#title' => $this->t('Simplify the following options'),
         '#options' => simplify_get_fields('blocks'),
         '#default_value' => _simplify_get_config_value('simplify_blocks_global'),
       );
@@ -165,7 +165,7 @@ class SimplifyAdminForm extends ConfigFormBase {
       );
       $form['profiles']['simplify_profiles_global'] = array(
         '#type' => 'checkboxes',
-        '#title' => $this->t('Hide'),
+        '#title' => $this->t('Simplify the following options'),
         '#options' => simplify_get_fields('profiles'),
         '#default_value' => _simplify_get_config_value('simplify_profiles_global'),
       );

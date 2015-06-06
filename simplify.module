@@ -9,7 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @see simplify_form_node_type_form_submit()
  */
-function simplify_form_node_type_form_alter(&$form, &$form_state, $form_id) {
+function simplify_form_node_type_edit_form_alter(&$form, &$form_state, $form_id) {
   $type = $form['type'];
 
   // Nodes
@@ -28,27 +28,8 @@ function simplify_form_node_type_form_alter(&$form, &$form_state, $form_id) {
     '#after_build' => array('_simplify_disable_globally_hidden_checkboxes'),
   );
 
-  // Comments
-  if (!empty($form['comment'])) {
-    $form['comment']['simplify'] = array(
-      '#type' => 'details',
-      '#title' => t('Simplify'),
-      '#description' => t("These fields will be hidden from <em>@type</em> comment forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $type->name, '@global' => \Drupal::url('simplify.admin'))),
-      '#access' => \Drupal::currentUser()->hasPermission('administer simplify'),
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
-    );
-    $form['comment']['simplify']['simplify_comments'] = array(
-      '#type' => 'checkboxes',
-      '#title' => t('Hide'),
-      '#options' => simplify_get_fields('comments'),
-      '#default_value' => _simplify_get_config_value('simplify_comments', array(), 'simplify.content_type.' . $type['#default_value']),
-      '#after_build' => array('_simplify_disable_globally_hidden_checkboxes'),
-    );
-  }
-
   // Add custom submit function
-  $form['actions']['submit']['#submit'][] = 'simplify_form_node_type_form_submit';
+  $form['actions']['submit']['#submit'][] = 'simplify_form_node_type_edit_form_submit';
 }
 
 /**
@@ -56,7 +37,7 @@ function simplify_form_node_type_form_alter(&$form, &$form_state, $form_id) {
  *
  * @see simplify_form_node_type_form_alter()
  */
-function simplify_form_node_type_form_submit($form, FormStateInterface $form_state) {
+function simplify_form_node_type_edit_form_submit($form, FormStateInterface $form_state) {
   $content_type = $form_state->getValue('type');
 
   // Get nodes fields
@@ -66,13 +47,51 @@ function simplify_form_node_type_form_submit($form, FormStateInterface $form_sta
   // Values aren't saved to a variable by default, so do it manually
   \Drupal::configFactory()->getEditable('simplify.content_type.' . $content_type)
   ->set('simplify_nodes', $fields)->save();
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for node_type_form.
+ *
+ * @see simplify_form_node_type_form_submit()
+ */
+function simplify_form_comment_type_edit_form_alter(&$form, &$form_state, $form_id) {
+  $type = $form['id'];
+
+  // Comments
+  $form['comment']['simplify'] = array(
+      '#type' => 'details',
+      '#title' => t('Simplify'),
+      '#description' => t("These fields will be hidden from <em>@type</em> comment forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $form['label']['#default_value'], '@global' => \Drupal::url('simplify.admin'))),
+      '#access' => \Drupal::currentUser()->hasPermission('administer simplify'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+  );
+  $form['comment']['simplify']['simplify_comments'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Simplify the following options'),
+      '#options' => simplify_get_fields('comments'),
+      '#default_value' => _simplify_get_config_value('simplify_comments', array(), 'simplify.comment_type.' . $type['#default_value']),
+      '#after_build' => array('_simplify_disable_globally_hidden_checkboxes'),
+  );
+
+  // Add custom submit function
+  $form['actions']['submit']['#submit'][] = 'simplify_form_comment_type_edit_form_submit';
+}
+
+/**
+ * Form submission handler for comment_type_edit_form().
+ *
+ * @see simplify_form_comment_type_edit_form_alter()
+ */
+function simplify_form_comment_type_edit_form_submit($form, FormStateInterface $form_state) {
+  $content_type = $form_state->getValue('id');
 
   // Get comments fields
-  $fields = $form_state->getValue('simplify_nodes');
+  $fields = $form_state->getValue('simplify_comments');
   $fields = array_keys(array_filter($fields));
 
   // Values aren't saved to a variable by default, so do it manually
-  \Drupal::configFactory()->getEditable('simplify.content_type.' . $content_type)
+  \Drupal::configFactory()->getEditable('simplify.comment_type.' . $content_type)
   ->set('simplify_comments', $fields)->save();
 
 }
@@ -94,7 +113,7 @@ function simplify_form_taxonomy_vocabulary_form_alter(&$form, FormStateInterface
   );
   $form['simplify']['simplify_taxonomies'] = array(
     '#type' => 'checkboxes',
-    '#title' => t('Hide'),
+    '#title' => t('Simplify the following options'),
     '#options' => simplify_get_fields('taxonomy'),
     '#default_value' => _simplify_get_config_value('simplify_taxonomies', array(), 'simplify.vocabulary.' . $vocabulary['#default_value']),
     '#after_build' => array('_simplify_disable_globally_hidden_checkboxes'),
@@ -251,11 +270,11 @@ function simplify_form_block_add_block_form_alter(&$form, &$form_state, $form_id
 }
 
 /**
- * Implements hook_form_FORM_ID_alter() for block_add_block_form.
+ * Implements hook_form_alter().
  */
 //@TODO Remove it when no more required.
 function simplify_form_alter(&$form, &$form_state, $form_id) {
-  //print_r($form_id);
+  print_r($form_id);
 }
 
 /**
