@@ -72,7 +72,7 @@ class SimplifyAdminForm extends ConfigFormBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Hide fields from User 1'),
       '#description' => $this->t("By default, Drupal gives User 1 <em>all</em> permissions (including Simplify's <em>View hidden fields</em> permission). This means that User 1 will always be able to view all hidden fields (and is by design).<br>Check this box to override this functionality and hide fields from User 1. NOTE: As this option overrides default Drupal behaviour, it should be used sparingly and only when you fully understand the consequences."),
-      '#default_value' => simplify_get_config_value('simplify_user1', FALSE),
+      '#default_value' => _simplify_get_config_value('simplify_user1', FALSE),
     );
 
     // Nodes.
@@ -87,7 +87,7 @@ class SimplifyAdminForm extends ConfigFormBase {
         '#type' => 'checkboxes',
         '#title' => $this->t('Hide'),
         '#options' => simplify_get_fields('nodes'),
-        '#default_value' => simplify_get_config_value('simplify_nodes_global'),
+        '#default_value' => _simplify_get_config_value('simplify_nodes_global'),
       );
     }
 
@@ -103,7 +103,7 @@ class SimplifyAdminForm extends ConfigFormBase {
         '#type' => 'checkboxes',
         '#title' => $this->t('Hide'),
         '#options' => simplify_get_fields('users'),
-        '#default_value' => simplify_get_config_value('simplify_users_global'),
+        '#default_value' => _simplify_get_config_value('simplify_users_global'),
       );
     }
 
@@ -119,7 +119,7 @@ class SimplifyAdminForm extends ConfigFormBase {
         '#type' => 'checkboxes',
         '#title' => $this->t('Hide'),
         '#options' => simplify_get_fields('comments'),
-        '#default_value' => simplify_get_config_value('simplify_comments_global'),
+        '#default_value' => _simplify_get_config_value('simplify_comments_global'),
       );
     }
 
@@ -131,11 +131,11 @@ class SimplifyAdminForm extends ConfigFormBase {
         '#description' => $this->t("These fields will be hidden from <em>all</em> taxonomy term forms. Alternatively, to hide fields from taxonomy term forms for a particular vocabulary, edit the vocabulary and configure the hidden fields there."),
         '#open' => TRUE,
       );
-      $form['taxonomy']['simplify_taxonomy_global'] = array(
+      $form['taxonomy']['simplify_taxonomies_global'] = array(
         '#type' => 'checkboxes',
         '#title' => $this->t('Hide'),
         '#options' => simplify_get_fields('taxonomy'),
-        '#default_value' => simplify_get_config_value('simplify_taxonomy_global'),
+        '#default_value' => _simplify_get_config_value('simplify_taxonomies_global'),
       );
     }
 
@@ -151,7 +151,7 @@ class SimplifyAdminForm extends ConfigFormBase {
         '#type' => 'checkboxes',
         '#title' => $this->t('Hide'),
         '#options' => simplify_get_fields('blocks'),
-        '#default_value' => simplify_get_config_value('simplify_blocks_global'),
+        '#default_value' => _simplify_get_config_value('simplify_blocks_global'),
       );
     }
 
@@ -167,7 +167,7 @@ class SimplifyAdminForm extends ConfigFormBase {
         '#type' => 'checkboxes',
         '#title' => $this->t('Hide'),
         '#options' => simplify_get_fields('profiles'),
-        '#default_value' => simplify_get_config_value('simplify_profiles_global'),
+        '#default_value' => _simplify_get_config_value('simplify_profiles_global'),
       );
     }
 
@@ -196,7 +196,7 @@ class SimplifyAdminForm extends ConfigFormBase {
       ->set('simplify_nodes_global', $this->getFormValue($form_state, 'simplify_nodes_global'))
       ->set('simplify_users_global', $this->getFormValue($form_state, 'simplify_users_global'))
       ->set('simplify_comments_global', $this->getFormValue($form_state, 'simplify_comments_global'))
-      ->set('simplify_taxonomy_global', $this->getFormValue($form_state, 'simplify_taxonomy_global'))
+      ->set('simplify_taxonomies_global', $this->getFormValue($form_state, 'simplify_taxonomies_global'))
       ->set('simplify_blocks_global', $this->getFormValue($form_state, 'simplify_blocks_global'))
       ->set('simplify_profiles_global', $this->getFormValue($form_state, 'simplify_profiles_global'))
       ->save();

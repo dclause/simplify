@@ -51,13 +51,13 @@ class PerContentTypeSettingsTest extends WebTestBase {
     $options = array(
       'simplify_user1' => TRUE,
       'simplify_nodes_global[author]' => 'author',
-        'simplify_nodes_global[comment]' => 'comment',
+      'simplify_nodes_global[comment]' => 'comment',
       'simplify_nodes_global[options]' => 'options',
     );
     $this->drupalPostForm(NULL, $options, t('Save configuration'));
 
-    // Create a content type
-    $type = $this->drupalCreateContentType(['type' => 'testing-type', 'name' => 'Testing type']);
+    // Create a content type.
+    $type = $this->drupalCreateContentType(['type' => 'testing_type', 'name' => 'Testing type']);
   }
 
   /**
@@ -66,7 +66,7 @@ class PerContentTypeSettingsTest extends WebTestBase {
   public function testSettingSaving() {
 
     // Open admin UI.
-    $this->drupalGet('/admin/structure/types/manage/testing-type');
+    $this->drupalGet('/admin/structure/types/manage/testing_type');
 
     /* -------------------------------------------------------.
      * 1/ Check if everything is there but unchecked.
@@ -98,6 +98,22 @@ class PerContentTypeSettingsTest extends WebTestBase {
 
     $comment_option = $this->xpath('//input[@name="simplify_nodes[comment]" and @disabled="disabled"]');
     $this->assertTrue(count($comment_option) === 1, 'Node comment settings option is disabled.');
+
+    /* -------------------------------------------------------.
+     * 3/ Save some options.
+     */
+
+    // Nodes.
+    $options = array(
+      'simplify_nodes[format]' => 'format',
+    );
+    $this->drupalPostForm(NULL, $options, t('Save content type'));
+
+    /* -------------------------------------------------------.
+     * 4/ Check if options are saved.
+     */
+    $this->drupalGet('/admin/structure/types/manage/testing_type');
+    $this->assertFieldChecked('edit-simplify-nodes-format', 'Node text fomat selection option is checked.');
 
   }
 
