@@ -50,7 +50,7 @@ class PerTaxonomySettingsTest extends WebTestBase {
     // Globally activate some options.
     $this->drupalGet('/admin/config/user-interface/simplify');
     $options = array(
-      'simplify_user1' => TRUE,
+      'simplify_admin' => TRUE,
       'simplify_taxonomies_global[format]' => 'format',
     );
     $this->drupalPostForm(NULL, $options, t('Save configuration'));

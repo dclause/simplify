@@ -67,12 +67,12 @@ class SimplifyAdminForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    // User 1 permission.
-    $form['simplify_user1'] = array(
+    // Admin user permission.
+    $form['simplify_admin'] = array(
       '#type' => 'checkbox',
-      '#title' => $this->t('Hide fields from User 1'),
-      '#description' => $this->t("By default, Drupal gives User 1 <em>all</em> permissions (including Simplify's <em>View hidden fields</em> permission). This means that User 1 will always be able to view all hidden fields (and is by design).<br>Check this box to override this functionality and hide fields from User 1. NOTE: As this option overrides default Drupal behaviour, it should be used sparingly and only when you fully understand the consequences."),
-      '#default_value' => _simplify_get_config_value('simplify_user1', FALSE),
+      '#title' => $this->t('Hide fields from admin users.'),
+      '#description' => $this->t("By default, Drupal gives User 1 and admin users <em>all</em> permissions (including Simplify's <em>View hidden fields</em> permission). This means that those users will always be able to view all hidden fields (and is by design).<br>Check this box to override this functionality and hide fields from any users. NOTE: As this option overrides default Drupal behaviour, it should be used sparingly and only when you fully understand the consequences."),
+      '#default_value' => _simplify_get_config_value('simplify_admin', FALSE),
     );
 
     // Nodes.
@@ -192,7 +192,7 @@ class SimplifyAdminForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     \Drupal::configFactory()->getEditable('simplify.global')
-      ->set('simplify_user1', $form_state->getValue('simplify_user1'))
+      ->set('simplify_admin', $form_state->getValue('simplify_admin'))
       ->set('simplify_nodes_global', $this->getFormValue($form_state, 'simplify_nodes_global'))
       ->set('simplify_users_global', $this->getFormValue($form_state, 'simplify_users_global'))
       ->set('simplify_comments_global', $this->getFormValue($form_state, 'simplify_comments_global'))

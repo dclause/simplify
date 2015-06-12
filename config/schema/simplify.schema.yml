@@ -2,7 +2,7 @@ simplify.global:
   type: mapping
   label: 'Global Configurations for Simplify module.'
   mapping:
-    simplify_user1:
+    simplify_admin:
       type: boolean
       label: ''
     simplify_nodes_global:

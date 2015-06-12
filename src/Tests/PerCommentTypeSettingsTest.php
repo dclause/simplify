@@ -49,7 +49,7 @@ class PerCommentTypeSettingsTest extends WebTestBase {
     // Globally activate some options.
     $this->drupalGet('/admin/config/user-interface/simplify');
     $options = array(
-      'simplify_user1' => TRUE,
+      'simplify_admin' => TRUE,
       'simplify_comments_global[format]' => 'format',
     );
     $this->drupalPostForm(NULL, $options, t('Save configuration'));
@@ -93,7 +93,7 @@ class PerCommentTypeSettingsTest extends WebTestBase {
 
     $this->drupalGet('/admin/config/user-interface/simplify');
     $options = array(
-      'simplify_user1' => TRUE,
+      'simplify_admin' => TRUE,
       'simplify_comments_global[format]' => FALSE,
     );
     $this->drupalPostForm(NULL, $options, t('Save configuration'));

@@ -141,60 +141,20 @@ function simplify_taxonomy_vocabulary_form_submit($form, FormStateInterface $for
 }
 
 /**
- * Implements hook_form_FORM_ID_alter() for profile2_type_form.
- */
-//@TODO Convert it and check.
-function simplify_form_profile2_type_form_alter(&$form, &$form_state, $form_id) {
-  $simplify_config = \Drupal::config('simplify.global');
-
-  // Profiles
-  $form['simplify'] = array(
-    '#type' => 'details',
-    '#title' => t('Simplify'),
-    '#description' => t("These fields will be hidden from <em>@type</em> profile forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $form['label']['#default_value'], '@global' => url('admin/config/user-interface/simplify'))),
-    '#access' => \Drupal::currentUser()->hasPermission('administer simplify'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#weight' => 12,
-  );
-  $form['simplify']['simplify_profiles'] = array(
-    '#type' => 'checkboxes',
-    '#title' => t('Hide'),
-    '#options' => simplify_get_fields('profiles'),
-    '#default_value' => _simplify_get_config_value('simplify_profiles_' . $form['type']['#default_value']),
-    '#after_build' => array('_simplify_disable_globally_hidden_checkboxes'),
-  );
-
-  // Add custom submit function
-  $form['#submit'][] = 'simplify_profile2_type_form_submit';
-}
-
-/**
- * Custom submit function for profile2_type_form.
- */
-//@TODO Convert it and check.
-function simplify_profile2_type_form_submit($form, &$form_state) {
-  $profile_type = $form_state['profile2_type'];
-
-  // Get fields
-  $fields = $form_state['values']['simplify_profiles'];
-  $fields = array_keys(array_filter($fields));
-
-  // Values aren't saved to a variable by default, so do it manually
-  variable_set('simplify.profiles.' . $profile_type->type, $fields);
-}
-
-/**
  * Implements hook_form_BASE_FORM_ID_alter() for node_form.
+ *
+ * Overrides the node creation form to hide elements depending on settings.
  */
-//@TODO Convert it and check.
-function simplify_form_node_form_alter(&$form, &$form_state, $form_id) {
+function simplify_form_node_form_alter(&$form, FormStateInterface $form_state) {
   $simplify_config = \Drupal::config('simplify.global');
-  $node = $form['#node'];
 
-  // Get array of fields to hide
+  // @todo This must be handled in a #process handler.
+  $node = $form_state->getFormObject()->getEntity();
+  $node_type = $node->type->entity;
+
+  // Get array of fields to hide.
   $global_fields = _simplify_get_config_value('simplify_nodes_global');
-  $type_fields = _simplify_get_config_value('simplify_nodes_' . $node->type);
+  $type_fields = _simplify_get_config_value('simplify_nodes', array(), 'simplify.content_type.' . $node_type->get('type'));
   $fields = array_merge($global_fields, $type_fields);
 
   // Hide fields
@@ -274,7 +234,7 @@ function simplify_form_block_add_block_form_alter(&$form, &$form_state, $form_id
  */
 //@TODO Remove it when no more required.
 function simplify_form_alter(&$form, &$form_state, $form_id) {
-  print_r($form_id);
+  //print_r($form_id);
 }
 
 /**
@@ -308,19 +268,6 @@ function simplify_form_profile2_form_alter(&$form, &$form_state, $form_id) {
 
   // Hide fields
   simplify_hide_fields($fields, $form);
-}
-
-/**
- * Hide fields from all users without the 'View hidden fields' permission.
- */
-//@TODO Convert it and check.
-function simplify_hide_fields($fields, &$form) {
-  global $user;
-  if (!empty($fields) && (!\Drupal::currentUser()->hasPermission('view hidden fields') || ($user->uid == 1 && variable_get('simplify_user1', 0)))) {
-    foreach ($fields as $field) {
-      simplify_hide_field($field, $form);
-    }
-  }
 }
 
 /**
@@ -440,133 +387,169 @@ function simplify_get_fields($type) {
   return $fields;
 }
 
+
+/* ---------------------------------------------------------------------------*\
+ *                    SIMPLIFICATION METHODS                                  *
+ * ---------------------------------------------------------------------------*/
+
 /**
- * Hide a given field.
+ * Hide fields from all users without the 'View hidden fields' permission.
+ *
+ * @param array $fields
+ *   The array of fields to simplify within the given form.
+ * @param array $form
+ *   The form in which to simplify the given fields.
  */
-//@TODO Convert it and check.
+function simplify_hide_fields($fields, &$form) {
+
+  // Retrieve current user.
+  $user = \Drupal::currentUser();
+  // Check if current user can view the hidden fields.
+  $user_can_view_hidden = \Drupal::currentUser()->hasPermission('view hidden fields');
+  // Check if even user1 must be simplified.
+  $hide_to_admin = _simplify_get_config_value('simplify_admin', 0);
+
+  // Depending on previous settings, simplify the $fields in the $form.
+  if (!empty($fields) && (!$user_can_view_hidden || $hide_to_admin)) {
+    foreach ($fields as $field) {
+      simplify_hide_field($field, $form);
+    }
+  }
+}
+
+/**
+ * Hide a given field in a form.
+ *
+ * @param string $field
+ *   The key for the field to simplify within a given form.
+ * @param array $form
+ *   The form in which to simplify the given fields.
+ */
 function simplify_hide_field($field, &$form) {
   switch ($field) {
 
-    // Authoring information
+    // Authoring information.
     case 'author':
       $form['author']['#access'] = FALSE;
     break;
 
-    // Book outline
+    // Book outline.
     case 'book':
       $form['book']['#access'] = FALSE;
     break;
 
-    // Comment settings
+    // Comment settings.
     case 'comment':
-      $form['comment_settings']['#access'] = FALSE;
+      $form['comment']['#access'] = FALSE;
     break;
 
-    // Contact settings
+    // Contact settings.
     case 'contact':
       $form['contact']['#access'] = FALSE;
     break;
 
-    // Domain access
+    // Domain access.
     case 'domain':
       $form['domain']['#access'] = FALSE;
     break;
 
-    // Entity translation
+    // Entity translation.
     case 'entity_translation':
       $form['translation']['#access'] = FALSE;
     break;
 
-    // Text format selection
+    // Text format selection.
     case 'format':
       simplify_hide_text_format_elements($form);
     break;
 
-    // Menu settings
+    // Menu settings.
     case 'menu':
       $form['menu']['#access'] = FALSE;
     break;
 
-    // Meta tags
+    // Meta tags.
     case 'metatag':
       $form['metatags']['#access'] = FALSE;
     break;
 
-    // Node noindex
+    // Node noindex.
     case 'node_noindex':
       $form['node_noindex']['#access'] = FALSE;
     break;
 
-    // Publishing options
+    // Publishing options.
     case 'options':
       $form['options']['#access'] = FALSE;
     break;
 
-    // Administrative overlay
+    // Administrative overlay.
     case 'overlay':
       $form['overlay_control']['#access'] = FALSE;
     break;
 
-    // URL path settings
+    // URL path settings.
     case 'path':
-      $form['path']['#access'] = FALSE;
+      $form['path_settings']['#access'] = FALSE;
     break;
 
-    // URL redirects
+    // URL redirects.
     case 'redirect':
       $form['redirect']['#access'] = FALSE;
     break;
 
-    // Relations
+    // Relations.
     case 'relations':
       $form['relations']['#access'] = FALSE;
     break;
 
-    // Revision information
+    // Revision information.
     case 'revision':
       $form['revision_information']['#access'] = FALSE;
     break;
 
-    // Status
+    // Status.
     case 'status':
       $form['account']['status']['#access'] = FALSE;
     break;
 
-    // XML sitemap
+    // XML sitemap.
     case 'xmlsitemap':
       $form['xmlsitemap']['#access'] = FALSE;
     break;
 
   }
 
-  // Allow other modules to alter the way fields are hidden
+  // Allow other modules to alter the way fields are hidden.
   \Drupal::moduleHandler()->alter('simplify_hide_field', $form, $field);
 }
 
 /**
  * Recurse through the provided form and hide any text_format elements.
+ *
+ * @param array $form
+ *   The form in which to interate to hide the text_format elements.
  */
-//@TODO Convert it and check.
 function simplify_hide_text_format_elements(&$form) {
-  foreach (element_children($form) as $key) {
-    if (!isset($form[$key]['#type'])) {
+  foreach (Element::children($form) as $key) {
+    if (!isset($form[$key]['#type']) || $form[$key]['#type'] == 'container') {
       simplify_hide_text_format_elements($form[$key]);
     }
-    else {
-      if ($form[$key]['#type'] == 'container' && isset($form[$key]['#language']) && !empty($form[$key][$form[$key]['#language']])) {
-        simplify_hide_text_format_elements($form[$key][$form[$key]['#language']]);
-      }
-      elseif ($form[$key]['#type'] == 'text_format') {
-        $form[$key]['#after_build'][] = 'simplify_hide_text_format_element';
-      }
+    elseif ($form[$key]['#type'] == 'text_format') {
+      $form[$key]['#after_build'][] = 'simplify_hide_text_format_element';
     }
   }
 }
 
 /**
  * Hide a given text_format element.
+ *
+ * @param array element
+ *   The element to hide.
+ *
+ * @return array
+ *   The hidden element.
  */
-//@TODO Convert it and check.
 function simplify_hide_text_format_element($element) {
   if (!empty($element['format'])) {
     $element['format']['#access'] = FALSE;

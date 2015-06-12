@@ -59,9 +59,9 @@ class GlobalSettingsTest extends WebTestBase {
      * 1/ Check only basic options are there but unchecked.
      */
 
-    // User 1.
-    $this->assertField('edit-simplify-user1', 'User 1 is here.');
-    $this->assertNoFieldChecked('edit-simplify-user1', 'User 1 is unchecked.');
+    // Admin user option.
+    $this->assertField('edit-simplify-admin', 'Admin user option is here.');
+    $this->assertNoFieldChecked('edit-simplify-admin', 'Admin user option is unchecked.');
     // Node globals.
     $this->assertNoRaw('Nodes', 'Nodes options are not available.');
     $this->assertNoField('edit-simplify-nodes-global-author', 'Author option is not available');
@@ -105,7 +105,7 @@ class GlobalSettingsTest extends WebTestBase {
      */
 
     $options = array(
-      'simplify_user1' => TRUE,
+      'simplify_admin' => TRUE,
       'simplify_nodes_global[author]' => 'author',
       'simplify_nodes_global[comment]' => 'comment',
       'simplify_nodes_global[options]' => 'options',
@@ -114,7 +114,7 @@ class GlobalSettingsTest extends WebTestBase {
     );
     $this->drupalPostForm(NULL, $options, t('Save configuration'));
     // User1.
-    $this->assertFieldChecked('edit-simplify-user1', 'User1 option is checked.');
+    $this->assertFieldChecked('edit-simplify-admin', 'Admin user option is checked.');
     // Nodes.
     $this->assertFieldChecked('edit-simplify-nodes-global-author', 'Node authoring information option is checked.');
     $this->assertNoFieldChecked('edit-simplify-nodes-global-format', 'Node text fomat selection option is not checked.');
