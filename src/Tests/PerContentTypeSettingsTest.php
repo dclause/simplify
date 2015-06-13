@@ -98,8 +98,8 @@ class PerContentTypeSettingsTest extends WebTestBase {
     // Nodes.
     $this->assertFieldChecked('edit-simplify-nodes-author', 'Node authoring information option is checked.');
     $this->assertNoFieldChecked('edit-simplify-nodes-format', 'Node text fomat selection option is not checked.');
-    $this->assertFieldChecked('edit-simplify-nodes-options', 'Node publishing options option is checked.');
-    $this->assertNoFieldChecked('edit-simplify-nodes-revision', 'Node revision information option is not checked.');
+    $this->assertFieldChecked('edit-simplify-nodes-options', 'Node promoting options option is checked.');
+    $this->assertNoFieldChecked('edit-simplify-nodes-revision-information', 'Node revision information option is not checked.');
     $this->assertFieldChecked('edit-simplify-nodes-comment', 'Node comment settings option is checked.');
 
     /* -------------------------------------------------------.
@@ -114,7 +114,7 @@ class PerContentTypeSettingsTest extends WebTestBase {
     $this->assertTrue(count($text_format) === 0, 'Node text format option is not disabled.');
 
     $publishing_option = $this->xpath('//input[@name="simplify_nodes[options]" and @disabled="disabled"]');
-    $this->assertTrue(count($publishing_option) === 1, 'Node publishing options option is disabled.');
+    $this->assertTrue(count($publishing_option) === 1, 'Node promoting options option is disabled.');
 
     $revision_option = $this->xpath('//input[@name="simplify_nodes[revision]" and @disabled="disabled"]');
     $this->assertTrue(count($revision_option) === 0, 'Node revision information option is not disabled.');

@@ -86,7 +86,7 @@ class GlobalSettingsTest extends WebTestBase {
     $this->assertNoFieldChecked('edit-simplify-nodes-global-author', 'Author option is unchecked');
     $this->assertNoFieldChecked('edit-simplify-nodes-global-format', 'Format option is unchecked.');
     $this->assertNoFieldChecked('edit-simplify-nodes-global-options', 'Publishing option is unchecked.');
-    $this->assertNoFieldChecked('edit-simplify-nodes-global-revision', 'Revision option is unchecked.');
+    $this->assertNoFieldChecked('edit-simplify-nodes-global-revision-information', 'Revision option is unchecked.');
     // User globals.
     $this->assertRaw('Users', 'Users options are now available.');
     $this->assertNoFieldChecked('edit-simplify-users-global-format', 'Text selection option is unchecked.');
@@ -110,7 +110,7 @@ class GlobalSettingsTest extends WebTestBase {
       'simplify_nodes_global[comment]' => 'comment',
       'simplify_nodes_global[options]' => 'options',
       'simplify_taxonomies_global[format]' => 'format',
-      'simplify_taxonomies_global[path]' => 'path',
+      'simplify_taxonomies_global[path_settings]' => 'path_settings',
     );
     $this->drupalPostForm(NULL, $options, t('Save configuration'));
     // User1.
@@ -118,12 +118,12 @@ class GlobalSettingsTest extends WebTestBase {
     // Nodes.
     $this->assertFieldChecked('edit-simplify-nodes-global-author', 'Node authoring information option is checked.');
     $this->assertNoFieldChecked('edit-simplify-nodes-global-format', 'Node text fomat selection option is not checked.');
-    $this->assertFieldChecked('edit-simplify-nodes-global-options', 'Node publishing options option is checked.');
-    $this->assertNoFieldChecked('edit-simplify-nodes-global-revision', 'Node revision information option is not checked.');
+    $this->assertFieldChecked('edit-simplify-nodes-global-options', 'Node promoting options option is checked.');
+    $this->assertNoFieldChecked('edit-simplify-nodes-global-revision-information', 'Node revision information option is not checked.');
     $this->assertNoFieldChecked('edit-simplify-nodes-global-book', 'Node book outline option is not checked.');
     $this->assertFieldChecked('edit-simplify-nodes-global-comment', 'Node comment settings option is checked.');
     $this->assertNoFieldChecked('edit-simplify-nodes-global-menu', 'Node menu settings option is not checked.');
-    $this->assertNoFieldChecked('edit-simplify-nodes-global-path', 'Node URL path settings option is not checked.');
+    $this->assertNoFieldChecked('edit-simplify-nodes-global-path-settings', 'Node URL path settings option is not checked.');
     // Vocabularies.
     $this->assertFieldChecked('edit-simplify-taxonomies-global-format', 'Taxonomy text fomat selection option is checked.');
     $this->assertNoFieldChecked('edit-simplify-taxonomies-global-relations', 'Taxonomy relation option is not checked.');
