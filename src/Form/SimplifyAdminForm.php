@@ -144,7 +144,7 @@ class SimplifyAdminForm extends ConfigFormBase {
       $form['blocks'] = array(
         '#type' => 'details',
         '#title' => $this->t('Blocks'),
-        '#description' => $this->t("These fields will be hidden from all block forms."),
+        '#description' => $this->t("These fields will be hidden from <em>all</em> blocks forms. Alternatively, to hide fields from block forms of a particular block type, edit the block type and configure the hidden fields there."),
         '#open' => TRUE,
       );
       $form['blocks']['simplify_blocks_global'] = array(

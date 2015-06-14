@@ -9,7 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @see simplify_form_node_type_form_submit()
  */
-function simplify_form_node_type_edit_form_alter(&$form, &$form_state, $form_id) {
+function simplify_form_node_type_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $type = $form['type'];
 
   // Nodes
@@ -54,7 +54,7 @@ function simplify_form_node_type_edit_form_submit($form, FormStateInterface $for
  *
  * @see simplify_form_node_type_form_submit()
  */
-function simplify_form_comment_type_edit_form_alter(&$form, &$form_state, $form_id) {
+function simplify_form_comment_type_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $type = $form['id'];
 
   // Comments
@@ -141,6 +141,50 @@ function simplify_taxonomy_vocabulary_form_submit($form, FormStateInterface $for
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter() for block_content_type_edit_form.
+ *
+ * Simplify settings "per block-type"  for blocks.
+ */
+function simplify_form_block_content_type_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Blocks
+  $form['simplify'] = array(
+      '#type' => 'details',
+      '#title' => t('Simplify'),
+      '#description' => t("These fields will be hidden from <em>@type</em> block forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $form['label']['#default_value'], '@global' => \Drupal::url('simplify.admin'))),
+      '#access' => \Drupal::currentUser()->hasPermission('administer simplify'),
+      '#group' => 'additional_settings',
+  );
+  $form['simplify']['simplify_blocks'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Simplify the following options'),
+      '#options' => simplify_get_fields('blocks'),
+      '#default_value' => _simplify_get_config_value('simplify_blocks', array(), 'simplify.block_type.' . $form['id']['#default_value']),
+      '#after_build' => array('_simplify_disable_globally_hidden_checkboxes'),
+  );
+
+  // Add custom submit function
+  $form['actions']['submit']['#submit'][] = 'simplify_form_block_content_type_edit_form_submit';
+}
+
+/**
+ * Form submission handler for block_content_type_edit_form().
+ *
+ * Save simplify settings "per block-type"  for blocks.
+ */
+function simplify_form_block_content_type_edit_form_submit($form, FormStateInterface $form_state) {
+  $block_type = $form_state->getValue('id');
+
+  // Get nodes fields
+  $fields = $form_state->getValue('simplify_blocks');
+  $fields = array_keys(array_filter($fields));
+
+  // Values aren't saved to a variable by default, so do it manually
+  \Drupal::configFactory()->getEditable('simplify.block_type.' . $block_type)
+  ->set('simplify_blocks', $fields)->save();
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter() for node_form.
  *
  * Overrides the node creation form to hide elements depending on settings.
@@ -166,7 +210,7 @@ function simplify_form_node_form_alter(&$form, FormStateInterface $form_state) {
  *
  * Overrides the user edition form to hide elements depending on settings.
  */
-function simplify_form_user_form_alter(&$form, &$form_state, $form_id) {
+function simplify_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Get array of fields to hide
   $fields = _simplify_get_config_value('simplify_users_global');
   // Hide fields
@@ -177,10 +221,9 @@ function simplify_form_user_form_alter(&$form, &$form_state, $form_id) {
  * Implements hook_form_FORM_ID_alter() for user_register_form.
  */
 //@TODO Convert it and check.
-function simplify_form_user_register_form_alter(&$form, &$form_state, $form_id) {
+function simplify_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Get array of fields to hide
   $fields = _simplify_get_config_value('simplify_users_global');
-
   // Hide fields
   simplify_hide_fields($fields, $form);
 }
@@ -189,7 +232,7 @@ function simplify_form_user_register_form_alter(&$form, &$form_state, $form_id) 
  * Implements hook_form_BASE_FORM_ID_alter() for comment_form.
  */
 //@TODO Convert it and check.
-function simplify_form_comment_form_alter(&$form, &$form_state, $form_id) {
+function simplify_form_comment_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $node = $form['#node'];
 
   // Get array of fields to hide
@@ -205,7 +248,7 @@ function simplify_form_comment_form_alter(&$form, &$form_state, $form_id) {
  * Implements hook_form_FORM_ID_alter() for taxonomy_form_term.
  */
 //@TODO Convert it and check.
-function simplify_form_taxonomy_form_term_alter(&$form, &$form_state, $form_id) {
+function simplify_form_taxonomy_form_term_alter(&$form, FormStateInterface $form_state, $form_id) {
   $vocabulary = $form['#vocabulary'];
 
   // Get array of fields to hide
@@ -219,32 +262,48 @@ function simplify_form_taxonomy_form_term_alter(&$form, &$form_state, $form_id) 
 
 /**
  * Implements hook_form_FORM_ID_alter() for block_add_block_form.
+ *
+ * Overrides the "create new block" form ti be simplified.
  */
-//@TODO Convert it and check.
-function simplify_form_block_add_block_form_alter(&$form, &$form_state, $form_id) {
-  // Get array of fields to hide
-  $fields = _simplify_get_config_value('simplify_blocks_global');
+function simplify_form_block_content_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+//   // Get array of fields to hide
+//   $fields = _simplify_get_config_value('simplify_blocks_global');
+//   // Hide fields
+//   simplify_hide_fields($fields, $form);
+
+  $simplify_config = \Drupal::config('simplify.global');
+
+  // @todo This must be handled in a #process handler.
+  $block = $form_state->getFormObject()->getEntity();
+  $block_type = $block->type->entity;
+
+  // Get array of fields to hide.
+  $global_fields = _simplify_get_config_value('simplify_blocks_global');
+  $type_fields = _simplify_get_config_value('simplify_blocks', array(), 'simplify.block_type.' . $block_type->id());
+  $fields = array_merge($global_fields, $type_fields);
 
   // Hide fields
   simplify_hide_fields($fields, $form);
+
+
 }
 
 /**
  * Implements hook_form_alter().
  */
 //@TODO Remove it when no more required.
-function simplify_form_alter(&$form, &$form_state, $form_id) {
-  //print_r($form_id);
+function simplify_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  print_r($form_id);
 }
 
 /**
- * Implements hook_form_FORM_ID_alter() for block_admin_configure.
+ * Implements hook_form_FORM_ID_alter() for block_form.
+ *
+ * Overrides the block "configure" page
  */
-//@TODO Convert it and check.
-function simplify_form_block_admin_configure_alter(&$form, &$form_state, $form_id) {
+function simplify_form_block_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Get array of fields to hide
   $fields = _simplify_get_config_value('simplify_blocks_global');
-
   // Hide fields
   simplify_hide_fields($fields, $form);
 }
@@ -374,6 +433,7 @@ function simplify_get_fields($type) {
     case 'blocks':
       // Drupal core:
       $fields['format'] = t('Text format selection');
+      $fields['revision_information'] = t('Revision information');
       break;
 
       // Profiles.

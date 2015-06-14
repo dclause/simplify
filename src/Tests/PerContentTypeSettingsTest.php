@@ -57,7 +57,7 @@ class PerContentTypeSettingsTest extends WebTestBase {
   }
 
   /**
-   * Check that Simplify module global configuration files saves settings.
+   * Perform full "per content-type" simplify scenario testing.
    */
   public function testSettingSaving() {
 
@@ -66,11 +66,11 @@ class PerContentTypeSettingsTest extends WebTestBase {
      */
     $this->drupalGet('node/add/testing_type');
 
-    $this->assertRaw('About text formats', 'Text format option is defined');
-    $this->assertRaw('Menu settings', 'Menu settings option is defined');
-    $this->assertRaw('URL path settings', 'URL path settings option is defined');
-    $this->assertRaw('Authoring information', 'Authoring information option is defined');
-    $this->assertRaw('Promotion options', 'Promotion options option is defined');
+    $this->assertRaw('About text formats', 'Text format option is defined.');
+    $this->assertRaw('Menu settings', 'Menu settings option is defined.');
+    $this->assertRaw('URL path settings', 'URL path settings option is defined.');
+    $this->assertRaw('Authoring information', 'Authoring information option is defined.');
+    $this->assertRaw('Promotion options', 'Promotion options option is defined.');
 
     /* -------------------------------------------------------.
      * 1/ Check if everything is there but unchecked.
@@ -116,7 +116,7 @@ class PerContentTypeSettingsTest extends WebTestBase {
     $publishing_option = $this->xpath('//input[@name="simplify_nodes[options]" and @disabled="disabled"]');
     $this->assertTrue(count($publishing_option) === 1, 'Node promoting options option is disabled.');
 
-    $revision_option = $this->xpath('//input[@name="simplify_nodes[revision]" and @disabled="disabled"]');
+    $revision_option = $this->xpath('//input[@name="simplify_nodes[revision-information]" and @disabled="disabled"]');
     $this->assertTrue(count($revision_option) === 0, 'Node revision information option is not disabled.');
 
     $comment_option = $this->xpath('//input[@name="simplify_nodes[comment]" and @disabled="disabled"]');
@@ -143,11 +143,11 @@ class PerContentTypeSettingsTest extends WebTestBase {
      */
     $this->drupalGet('node/add/testing_type');
 
-    $this->assertNoRaw('About text formats', 'Text format option is defined');
-    $this->assertRaw('Menu settings', 'Menu settings option is defined');
-    $this->assertRaw('URL path settings', 'URL path settings option is defined');
-    $this->assertNoRaw('Authoring information', 'Authoring information option is defined');
-    $this->assertNoRaw('Promotion options', 'Promotion options option is defined');
+    $this->assertNoRaw('About text formats', 'Text format option is not defined.');
+    $this->assertRaw('Menu settings', 'Menu settings option is defined.');
+    $this->assertRaw('URL path settings', 'URL path settings option is defined.');
+    $this->assertNoRaw('Authoring information', 'Authoring information option is not defined.');
+    $this->assertNoRaw('Promotion options', 'Promotion options option is not defined.');
   }
 
 }

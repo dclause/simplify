@@ -64,7 +64,7 @@ class GlobalSettingsTest extends WebTestBase {
     $this->assertNoFieldChecked('edit-simplify-admin', 'Admin user option is unchecked.');
     // Node globals.
     $this->assertNoRaw('Nodes', 'Nodes options are not available.');
-    $this->assertNoField('edit-simplify-nodes-global-author', 'Author option is not available');
+    $this->assertNoField('edit-simplify-nodes-global-author', 'Author option is not available.');
     // User globals.
     $this->assertRaw('Users', 'Users options are not available.');
     $this->assertNoFieldChecked('edit-simplify-users-global-format', 'Text selection option is not available.');
@@ -83,7 +83,7 @@ class GlobalSettingsTest extends WebTestBase {
     $this->drupalGet('/admin/config/user-interface/simplify');
     // Node globals.
     $this->assertRaw('Nodes', 'Nodes options are now available.');
-    $this->assertNoFieldChecked('edit-simplify-nodes-global-author', 'Author option is unchecked');
+    $this->assertNoFieldChecked('edit-simplify-nodes-global-author', 'Author option is unchecked.');
     $this->assertNoFieldChecked('edit-simplify-nodes-global-format', 'Format option is unchecked.');
     $this->assertNoFieldChecked('edit-simplify-nodes-global-options', 'Publishing option is unchecked.');
     $this->assertNoFieldChecked('edit-simplify-nodes-global-revision-information', 'Revision option is unchecked.');

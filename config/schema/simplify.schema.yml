@@ -74,3 +74,14 @@ simplify.comment_type.*:
         sequence:
           type: string
           label: 'Comment setting'
+          
+simplify.block_type.*:
+  type: mapping
+  label: 'Per block-type configurations for Simplify module.'
+  mapping:
+    simplify_blocks:
+        type: sequence
+        label: 'Blocks settings'
+        sequence:
+          type: string
+          label: 'Block setting'
