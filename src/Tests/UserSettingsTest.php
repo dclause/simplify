@@ -60,16 +60,21 @@ class UserSettingsTest extends WebTestBase {
     /* -------------------------------------------------------.
      * 0/ Check that everything is here in the user edit page.
      */
+    // A- On user edit page.
     $this->drupalGet($user_edit_page);
-
     $this->assertRaw('Status', 'Status option is defined.');
+    $this->assertRaw('Contact settings', 'Contact settings option is defined.');
+    $this->assertRaw('Locale settings', 'Locale settings option is defined.');
+    // B- On user register page.
+    $this->drupalLogout();
+    $this->drupalGet('/user/register');
     $this->assertRaw('Contact settings', 'Contact settings option is defined.');
     $this->assertRaw('Locale settings', 'Locale settings option is defined.');
 
     /* -------------------------------------------------------.
      * 1/ Check if everything is there but unchecked.
      */
-
+    $this->drupalLogin($admin_user);
     // Globally activate some options.
     $this->drupalGet('admin/config/user-interface/simplify');
     $options = array(
@@ -85,12 +90,16 @@ class UserSettingsTest extends WebTestBase {
     /* -------------------------------------------------------.
      * 2/ Check the effect on user settings.
      */
+    // A- On user edit page.
     $this->drupalGet($user_edit_page);
-
     $this->assertNoRaw('Status', 'Status option is not defined');
     $this->assertNoRaw('Contact settings', 'Contact settings option is not defined.');
     $this->assertNoRaw('Locale settings', 'Locale settings option is not defined.');
-
+    // B- On user register page.
+    $this->drupalLogout();
+    $this->drupalGet('/user/register');
+    $this->assertNoRaw('Contact settings', 'Contact settings option is not defined.');
+    $this->assertNoRaw('Locale settings', 'Locale settings option is not defined.');
   }
 
 }

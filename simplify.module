@@ -208,7 +208,7 @@ function simplify_form_node_form_alter(&$form, FormStateInterface $form_state) {
 /**
  * Implements hook_form_FORM_ID_alter() for user_form.
  *
- * Overrides the user edition form to hide elements depending on settings.
+ * Simplifies the "user edition form" to hide elements depending on settings.
  */
 function simplify_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Get array of fields to hide
@@ -219,8 +219,10 @@ function simplify_form_user_form_alter(&$form, FormStateInterface $form_state, $
 
 /**
  * Implements hook_form_FORM_ID_alter() for user_register_form.
+ *
+ * Simplifies the "user registration form" to hide elements depending on
+ * settings.
  */
-//@TODO Convert it and check.
 function simplify_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Get array of fields to hide
   $fields = _simplify_get_config_value('simplify_users_global');
@@ -230,14 +232,19 @@ function simplify_form_user_register_form_alter(&$form, FormStateInterface $form
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter() for comment_form.
+ *
+ * Simplifies the "comment" form on a node to hide elements depending on
+ * settings.
  */
-//@TODO Convert it and check.
 function simplify_form_comment_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $node = $form['#node'];
+  $simplify_config = \Drupal::config('simplify.global');
 
-  // Get array of fields to hide
+  // @todo This must be handled in a #process handler.
+  $comment = $form_state->getFormObject()->getEntity();
+
+  // Get array of fields to hide.
   $global_fields = _simplify_get_config_value('simplify_comments_global');
-  $type_fields = _simplify_get_config_value('simplify_comments_' . $node->type);
+  $type_fields = _simplify_get_config_value('simplify_comments', array(), 'simplify.comment_type.' . $comment->getTypeId());
   $fields = array_merge($global_fields, $type_fields);
 
   // Hide fields
@@ -266,11 +273,6 @@ function simplify_form_taxonomy_form_term_alter(&$form, FormStateInterface $form
  * Overrides the "create new block" form ti be simplified.
  */
 function simplify_form_block_content_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-//   // Get array of fields to hide
-//   $fields = _simplify_get_config_value('simplify_blocks_global');
-//   // Hide fields
-//   simplify_hide_fields($fields, $form);
-
   $simplify_config = \Drupal::config('simplify.global');
 
   // @todo This must be handled in a #process handler.
@@ -284,8 +286,6 @@ function simplify_form_block_content_form_alter(&$form, FormStateInterface $form
 
   // Hide fields
   simplify_hide_fields($fields, $form);
-
-
 }
 
 /**

@@ -10,6 +10,7 @@
 namespace Drupal\simplify\Tests;
 
 use Drupal\simpletest\WebTestBase;
+use Drupal\comment\Tests\CommentTestTrait;
 
 /**
  * Test simplify per comment-type settings.
@@ -19,13 +20,21 @@ use Drupal\simpletest\WebTestBase;
  * @ingroup simplify
  */
 class PerCommentTypeSettingsTest extends WebTestBase {
+  use CommentTestTrait;
+
+  /**
+   * An administrative user with permission to configure comment settings.
+   *
+   * @var \Drupal\user\UserInterface
+   */
+  protected $adminUser;
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = array('node', 'comment', 'simplify');
+  public static $modules = array('node', 'comment', 'field_ui', 'simplify');
 
   /**
    * {@inheritdoc}
@@ -43,8 +52,48 @@ class PerCommentTypeSettingsTest extends WebTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $admin_user = $this->drupalCreateUser(array('administer comment types', 'administer simplify'));
-    $this->drupalLogin($admin_user);
+
+    // Create two test users.
+    $this->adminUser = $this->drupalCreateUser(array(
+      'administer content types',
+      'administer comments',
+      'administer comment types',
+      'administer comment fields',
+      'administer comment display',
+      'administer simplify',
+      'skip comment approval',
+      'post comments',
+      'access comments',
+      'access content',
+    ));
+    $this->drupalLogin($this->adminUser);
+
+    // Create a content type.
+    $content_type = $this->drupalCreateContentType(['type' => 'content_type', 'name' => 'Testing content type']);
+
+    // Create comment field on $content_type bundle.
+    $this->addDefaultCommentField('node', 'content_type');
+  }
+
+  /**
+   * Check that Simplify module global configuration files saves settings.
+   */
+  public function testSettingSaving() {
+
+    /* -------------------------------------------------------.
+     * 0/ Check the comment form by default.
+     */
+
+    // Create a test node authored by the user.
+    $node = $this->drupalCreateNode(array('type' => 'content_type', 'promote' => 1, 'uid' => $this->adminUser->id()));
+
+    // Check if options are there.
+    $this->drupalGet("/node/" . $node->id());
+    $this->assertRaw('About text formats', 'Comment text format option is defined.');
+
+    /* -------------------------------------------------------.
+     * 1/ Activate some global options and check "per comment-type" accordingly.
+     */
 
     // Globally activate some options.
     $this->drupalGet('/admin/config/user-interface/simplify');
@@ -54,41 +103,18 @@ class PerCommentTypeSettingsTest extends WebTestBase {
     );
     $this->drupalPostForm(NULL, $options, t('Save configuration'));
 
-    // Create a comment type.
-    $comment_type = entity_create('comment_type', array(
-      'id' => 'testing_comment_type',
-      'label' => $this->randomMachineName(),
-      'description' => $this->randomMachineName(),
-      'target_entity_type_id' => 'node_type',
-    ));
-    $comment_type->save();
-  }
-
-  /**
-   * Check that Simplify module global configuration files saves settings.
-   */
-  public function testSettingSaving() {
-
     // Open admin UI.
-    $this->drupalGet('/admin/structure/comment/manage/testing_comment_type');
+    $this->drupalGet('/admin/structure/comment/manage/comment');
 
-    /* -------------------------------------------------------.
-     * 1/ Check if everything is there but unchecked.
-     */
-
-    // Comments.
+    // Check if global options are forwarded.
     $this->assertFieldChecked('edit-simplify-comments-format', 'Comment text fomat selection option is checked.');
 
-    /* -------------------------------------------------------.
-     * 2/ Check if everything is properly disabled if needed.
-     */
-
-    // Comments.
+    // Check if everything is properly disabled if needed.
     $text_format = $this->xpath('//input[@name="simplify_comments[format]" and @disabled="disabled"]');
     $this->assertTrue(count($text_format) === 1, 'Comment text format option is disabled.');
 
     /* -------------------------------------------------------.
-     * 3/ Remove global options.
+     * 2/ Remove global options.
      */
 
     $this->drupalGet('/admin/config/user-interface/simplify');
@@ -99,13 +125,13 @@ class PerCommentTypeSettingsTest extends WebTestBase {
     $this->drupalPostForm(NULL, $options, t('Save configuration'));
 
     // Open admin UI.
-    $this->drupalGet('/admin/structure/comment/manage/testing_comment_type');
+    $this->drupalGet('/admin/structure/comment/manage/comment');
 
-    // Comments.
+    // Check if global options are forwarded.
     $this->assertNoFieldChecked('edit-simplify-comments-format', 'Comment text fomat selection option is not checked.');
 
     /* -------------------------------------------------------.
-     * 3/ Save some options.
+     * 3/ Save some custom options.
      */
 
     // Nodes.
@@ -117,8 +143,15 @@ class PerCommentTypeSettingsTest extends WebTestBase {
     /* -------------------------------------------------------.
      * 4/ Check if options are saved.
      */
-    $this->drupalGet('/admin/structure/comment/manage/testing_comment_type');
+    $this->drupalGet('/admin/structure/comment/manage/comment');
     $this->assertFieldChecked('edit-simplify-comments-format', 'Comment text fomat selection option is checked.');
+
+    /*
+     * 5/ Check if comment form is now simplified.
+     */
+    $this->drupalGet("/node/" . $node->id());
+    $this->assertNoRaw('About text formats', 'Comment text format option is not defined.');
+
 
   }
 
