@@ -95,7 +95,7 @@ class GlobalSettingsTest extends WebTestBase {
     $this->assertRaw('Taxonomy', 'Taxonomy options are now available.');
     $this->assertNoFieldChecked('edit-simplify-taxonomies-global-format', 'Taxonomy selection option is unchecked.');
     $this->assertNoFieldChecked('edit-simplify-taxonomies-global-relations', 'Taxonomy relation option is unchecked.');
-    $this->assertNoFieldChecked('edit-simplify-taxonomies-global-relations', 'Taxonomy url alias option is unchecked.');
+    $this->assertNoFieldChecked('edit-simplify-taxonomies-global-path', 'Taxonomy url alias option is unchecked.');
     // Blocks is not here.
     $this->assertRaw('Block', 'Blocks options are now available.');
     $this->assertNoFieldChecked('edit-simplify-blocks-global-format', 'Text format option is unchecked.');
@@ -110,7 +110,7 @@ class GlobalSettingsTest extends WebTestBase {
       'simplify_nodes_global[comment]' => 'comment',
       'simplify_nodes_global[options]' => 'options',
       'simplify_taxonomies_global[format]' => 'format',
-      'simplify_taxonomies_global[path_settings]' => 'path_settings',
+      'simplify_taxonomies_global[path]' => 'path',
     );
     $this->drupalPostForm(NULL, $options, t('Save configuration'));
     // User1.
@@ -127,7 +127,7 @@ class GlobalSettingsTest extends WebTestBase {
     // Vocabularies.
     $this->assertFieldChecked('edit-simplify-taxonomies-global-format', 'Taxonomy text fomat selection option is checked.');
     $this->assertNoFieldChecked('edit-simplify-taxonomies-global-relations', 'Taxonomy relation option is not checked.');
-    $this->assertFieldChecked('edit-simplify-taxonomies-global-format', 'Taxonomy url alias option is checked.');
+    $this->assertFieldChecked('edit-simplify-taxonomies-global-path', 'Taxonomy url alias option is checked.');
   }
 
 }
