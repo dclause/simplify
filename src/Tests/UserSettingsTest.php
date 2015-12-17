@@ -90,6 +90,11 @@ class UserSettingsTest extends WebTestBase {
     /* -------------------------------------------------------.
      * 2/ Check the effect on user settings.
      */
+
+    // @TODO Remove this when hook_form_user_register_alter() is taken in
+    // in consideration in testing profile with no cache refresh.
+    drupal_flush_all_caches();
+
     // A- On user edit page.
     $this->drupalGet($user_edit_page);
     $this->assertNoRaw('Status', 'Status option is not defined');
