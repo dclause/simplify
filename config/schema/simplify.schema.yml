@@ -1,5 +1,5 @@
 simplify.global:
-  type: mapping
+  type: config_object
   label: 'Global Configurations for Simplify module.'
   mapping:
     simplify_admin:
@@ -43,7 +43,7 @@ simplify.global:
         label: 'Profile setting'
 
 simplify.content_type.*:
-  type: mapping
+  type: config_object
   label: 'Per content-type configurations for Simplify module.'
   mapping:
     simplify_nodes:
@@ -54,7 +54,7 @@ simplify.content_type.*:
           label: 'Node setting'
 
 simplify.vocabulary.*:
-  type: mapping
+  type: config_object
   label: 'Per vocabulary configurations for Simplify module.'
   mapping:
     simplify_taxonomies:
@@ -65,7 +65,7 @@ simplify.vocabulary.*:
           label: 'Node setting'
 
 simplify.comment_type.*:
-  type: mapping
+  type: config_object
   label: 'Per comment-type configurations for Simplify module.'
   mapping:
     simplify_comments:
@@ -76,7 +76,7 @@ simplify.comment_type.*:
           label: 'Comment setting'
           
 simplify.block_type.*:
-  type: mapping
+  type: config_object
   label: 'Per block-type configurations for Simplify module.'
   mapping:
     simplify_blocks:
