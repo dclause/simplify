@@ -9,8 +9,8 @@
 
 namespace Drupal\simplify\Tests;
 
+use Drupal\block_content\Entity\BlockContentType;
 use Drupal\simpletest\WebTestBase;
-use Drupal\user\Entity\Role;
 
 /**
  * Test simplify per block-type settings.
@@ -139,7 +139,7 @@ class PerBlockTypeSettingsTest extends WebTestBase {
    *   Created custom block type.
    */
   protected function createBlockContentType($label, $create_body = FALSE) {
-    $bundle = entity_create('block_content_type', array(
+    $bundle = BlockContentType::create(array(
         'id' => $label,
         'label' => $label,
         'revision' => TRUE,

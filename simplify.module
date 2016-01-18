@@ -1,9 +1,9 @@
 <?php
 
 use Drupal\Core\Render\Element;
-use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\user\Entity\Role;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_form_FORM_ID_alter() for node_type_form.
@@ -17,7 +17,7 @@ function simplify_form_node_type_edit_form_alter(&$form, FormStateInterface $for
   $form['simplify'] = array(
     '#type' => 'details',
     '#title' => t('Simplify'),
-    '#description' => t("These fields will be hidden from <em>@type</em> node forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $form['name']['#default_value'], '@global' => \Drupal::url('simplify.admin'))),
+    '#description' => t("These fields will be hidden from <em>@type</em> node forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $form['name']['#default_value'], '@global' => Url::fromRoute('simplify.admin')->toString())),
     '#access' => \Drupal::currentUser()->hasPermission('administer simplify'),
     '#group' => 'additional_settings',
   );
@@ -62,7 +62,7 @@ function simplify_form_comment_type_edit_form_alter(&$form, FormStateInterface $
   $form['comment']['simplify'] = array(
       '#type' => 'details',
       '#title' => t('Simplify'),
-      '#description' => t("These fields will be hidden from <em>@type</em> comment forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $form['label']['#default_value'], '@global' => \Drupal::url('simplify.admin'))),
+      '#description' => t("These fields will be hidden from <em>@type</em> comment forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $form['label']['#default_value'], '@global' => Url::fromRoute('simplify.admin')->toString())),
       '#access' => \Drupal::currentUser()->hasPermission('administer simplify'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
@@ -108,7 +108,7 @@ function simplify_form_taxonomy_vocabulary_form_alter(&$form, FormStateInterface
   $form['simplify'] = array(
     '#type' => 'details',
     '#title' => t('Simplify'),
-    '#description' => t("These fields will be hidden from <em>@vocabulary</em> taxonomy term forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@vocabulary' => $form['name']['#default_value'], '@global' => \Drupal::url('simplify.admin'))),
+    '#description' => t("These fields will be hidden from <em>@vocabulary</em> taxonomy term forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@vocabulary' => $form['name']['#default_value'], '@global' => Url::fromRoute('simplify.admin')->toString())),
     '#access' => \Drupal::currentUser()->hasPermission('administer simplify'),
     '#group' => 'additional_settings',
   );
@@ -152,7 +152,7 @@ function simplify_form_block_content_type_edit_form_alter(&$form, FormStateInter
   $form['simplify'] = array(
       '#type' => 'details',
       '#title' => t('Simplify'),
-      '#description' => t("These fields will be hidden from <em>@type</em> block forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $form['label']['#default_value'], '@global' => \Drupal::url('simplify.admin'))),
+      '#description' => t("These fields will be hidden from <em>@type</em> block forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href=\"@global\">Simplify administration page</a>.", array('@type' => $form['label']['#default_value'], '@global' => Url::fromRoute('simplify.admin')->toString())),
       '#access' => \Drupal::currentUser()->hasPermission('administer simplify'),
       '#group' => 'additional_settings',
   );

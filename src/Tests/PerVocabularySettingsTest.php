@@ -10,7 +10,7 @@
 namespace Drupal\simplify\Tests;
 
 use Drupal\simpletest\WebTestBase;
-use Drupal\Component\Utility\Unicode;
+use Drupal\taxonomy\Entity\Vocabulary;
 
 /**
  * Test simplify per vocabulary settings.
@@ -49,7 +49,7 @@ class PerVocabularySettingsTest extends WebTestBase {
     $this->drupalLogin($admin_user);
 
     // Create a vocabulary.
-    $vocabulary = entity_create('taxonomy_vocabulary', array(
+    $vocabulary = Vocabulary::create(array(
       'name' => $this->randomMachineName(),
       'description' => $this->randomMachineName(),
       'vid' => 'testing_vocabulary',

@@ -10,7 +10,6 @@
 namespace Drupal\simplify\Tests;
 
 use Drupal\simpletest\WebTestBase;
-use Drupal\user\Entity\Role;
 
 /**
  * Test simplify user settings.
