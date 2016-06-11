@@ -537,7 +537,7 @@ function simplify_hide_text_format_elements(&$form) {
  */
 function simplify_hide_text_format_element($element) {
   if (!empty($element['format'])) {
-    $element['format']['#access'] = FALSE;
+    $element['format']['#attributes']['class'][] = 'hidden';
   }
   return $element;
 }
