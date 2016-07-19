@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\simplify\Form\SimplifyAdminForm.
- */
-
 namespace Drupal\simplify\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
