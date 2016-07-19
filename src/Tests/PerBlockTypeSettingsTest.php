@@ -26,7 +26,7 @@ class PerBlockTypeSettingsTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('block_content', 'simplify');
+  public static $modules = array('block_content', 'editor', 'simplify');
 
   /**
    * {@inheritdoc}
