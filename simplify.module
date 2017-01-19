@@ -669,8 +669,13 @@ function simplify_hide_text_format_elements(&$form) {
       simplify_hide_text_format_elements($form[$key]);
     }
     else {
-      if ($form[$key]['#type'] == 'container' && isset($form[$key]['#language']) && !empty($form[$key][$form[$key]['#language']])) {
-        simplify_hide_text_format_elements($form[$key][$form[$key]['#language']]);
+      if (in_array($form[$key]['#type'], array('container', 'fieldset'))) {
+        if (isset($form[$key]['#language']) && !empty($form[$key][$form[$key]['#language']])) {
+          simplify_hide_text_format_elements($form[$key][$form[$key]['#language']]);
+        }
+        else {
+          simplify_hide_text_format_elements($form[$key]);
+        }
       }
       elseif ($form[$key]['#type'] == 'text_format') {
         $form[$key]['#after_build'][] = 'simplify_hide_text_format_element';
