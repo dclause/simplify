@@ -1,12 +1,5 @@
 <?php
 
-/**
- * @file
- * Test case for testing the per vocabulary simplify configurations.
- *
- * Sponsored by: www.drupal-addict.com
- */
-
 namespace Drupal\simplify\Tests;
 
 use Drupal\simpletest\WebTestBase;

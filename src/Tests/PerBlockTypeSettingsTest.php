@@ -1,12 +1,5 @@
 <?php
 
-/**
- * @file
- * Test case for testing the per block-type simplify configurations.
- *
- * Sponsored by: www.drupal-addict.com
- */
-
 namespace Drupal\simplify\Tests;
 
 use Drupal\block_content\Entity\BlockContentType;

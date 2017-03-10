@@ -1,12 +1,5 @@
 <?php
 
-/**
- * @file
- * Test case for testing the global simplify configuration page.
- *
- * Sponsored by: www.drupal-addict.com
- */
-
 namespace Drupal\simplify\Tests;
 
 use Drupal\simpletest\WebTestBase;
