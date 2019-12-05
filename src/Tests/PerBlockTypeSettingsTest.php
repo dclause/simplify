@@ -19,17 +19,17 @@ class PerBlockTypeSettingsTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('block_content', 'editor', 'simplify');
+  public static $modules = ['block_content', 'editor', 'simplify'];
 
   /**
    * {@inheritdoc}
    */
   public static function getInfo() {
-    return array(
+    return [
       'name' => 'Simplify per block-type settings test.',
       'description' => 'Test the Simplify per block-type settings.',
       'group' => 'Simplify',
-    );
+    ];
   }
 
   /**
@@ -39,7 +39,7 @@ class PerBlockTypeSettingsTest extends WebTestBase {
     parent::setUp();
 
     // Create an admin user.
-    $admin_user = $this->drupalCreateUser(array(), NULL, TRUE);
+    $admin_user = $this->drupalCreateUser([], NULL, TRUE);
     $this->drupalLogin($admin_user);
 
     // Create a block type.
@@ -65,10 +65,10 @@ class PerBlockTypeSettingsTest extends WebTestBase {
 
     // Globally activate some options.
     $this->drupalGet('admin/config/user-interface/simplify');
-    $options = array(
+    $options = [
       'simplify_admin' => TRUE,
       'simplify_blocks_global[format]' => 'format',
-    );
+    ];
     $this->drupalPostForm(NULL, $options, t('Save configuration'));
     // Admin users setting.
     $this->assertFieldChecked('edit-simplify-admin', "Admin users can't see hidden fields too.");
@@ -100,9 +100,9 @@ class PerBlockTypeSettingsTest extends WebTestBase {
      */
 
     // Nodes.
-    $options = array(
+    $options = [
       'simplify_blocks[revision_information]' => 'format',
-    );
+    ];
     $this->drupalPostForm(NULL, $options, t('Save'));
 
     /* -------------------------------------------------------.
@@ -126,17 +126,17 @@ class PerBlockTypeSettingsTest extends WebTestBase {
    * @param string $label
    *   The block type label.
    * @param bool $create_body
-   *   Whether or not to create the body field
+   *   Whether or not to create the body field.
    *
    * @return \Drupal\block_content\Entity\BlockContentType
    *   Created custom block type.
    */
   protected function createBlockContentType($label, $create_body = FALSE) {
-    $bundle = BlockContentType::create(array(
-        'id' => $label,
-        'label' => $label,
-        'revision' => TRUE,
-    ));
+    $bundle = BlockContentType::create([
+      'id' => $label,
+      'label' => $label,
+      'revision' => TRUE,
+    ]);
     $bundle->save();
     if ($create_body) {
       block_content_add_body_field($bundle->id());
