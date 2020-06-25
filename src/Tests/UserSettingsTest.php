@@ -68,7 +68,7 @@ class UserSettingsTest extends WebTestBase {
       'simplify_users_global[timezone]' => 'timezone',
       'simplify_users_global[contact]' => 'contact',
     ];
-    $this->drupalPostForm(NULL, $options, t('Save configuration'));
+    $this->drupalPostForm(NULL, $options, $this->t('Save configuration'));
     // Admin users setting.
     $this->assertFieldChecked('edit-simplify-admin', "Admin users can't see hidden fields too.");
 

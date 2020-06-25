@@ -83,7 +83,7 @@ class PerContentTypeSettingsTest extends WebTestBase {
       'simplify_nodes_global[comment]' => 'comment',
       'simplify_nodes_global[options]' => 'options',
     ];
-    $this->drupalPostForm(NULL, $options, t('Save configuration'));
+    $this->drupalPostForm(NULL, $options, $this->t('Save configuration'));
     // Admin users setting.
     $this->assertFieldChecked('edit-simplify-admin', "Admin users can't see hidden fields too.");
 
@@ -129,7 +129,7 @@ class PerContentTypeSettingsTest extends WebTestBase {
     $options = [
       'simplify_nodes[format]' => 'format',
     ];
-    $this->drupalPostForm(NULL, $options, t('Save content type'));
+    $this->drupalPostForm(NULL, $options, $this->t('Save content type'));
 
     /* -------------------------------------------------------.
      * 3-bis/ Check if options are saved.
