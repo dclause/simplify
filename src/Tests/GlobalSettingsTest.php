@@ -2,7 +2,7 @@
 
 namespace Drupal\simplify\Tests;
 
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Test Simplify module global settings.
@@ -11,7 +11,7 @@ use Drupal\simpletest\WebTestBase;
  *
  * @ingroup simplify
  */
-class GlobalSettingsTest extends WebTestBase {
+class GlobalSettingsTest extends BrowserTestBase {
 
   /**
    * Modules to enable.

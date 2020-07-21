@@ -2,8 +2,8 @@
 
 namespace Drupal\simplify\Tests;
 
-use Drupal\simpletest\WebTestBase;
 use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Test simplify per vocabulary settings.
@@ -12,7 +12,7 @@ use Drupal\taxonomy\Entity\Vocabulary;
  *
  * @ingroup simplify
  */
-class PerVocabularySettingsTest extends WebTestBase {
+class PerVocabularySettingsTest extends BrowserTestBase {
 
   /**
    * Modules to enable.

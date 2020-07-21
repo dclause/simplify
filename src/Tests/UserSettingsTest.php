@@ -2,7 +2,7 @@
 
 namespace Drupal\simplify\Tests;
 
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Test simplify user settings.
@@ -11,7 +11,7 @@ use Drupal\simpletest\WebTestBase;
  *
  * @ingroup simplify
  */
-class UserSettingsTest extends WebTestBase {
+class UserSettingsTest extends BrowserTestBase {
 
   /**
    * Modules to enable.

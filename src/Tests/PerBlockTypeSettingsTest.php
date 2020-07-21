@@ -3,7 +3,7 @@
 namespace Drupal\simplify\Tests;
 
 use Drupal\block_content\Entity\BlockContentType;
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Test simplify per block-type settings.
@@ -12,7 +12,7 @@ use Drupal\simpletest\WebTestBase;
  *
  * @ingroup simplify
  */
-class PerBlockTypeSettingsTest extends WebTestBase {
+class PerBlockTypeSettingsTest extends BrowserTestBase {
 
   /**
    * Modules to enable.

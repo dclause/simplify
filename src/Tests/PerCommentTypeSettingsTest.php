@@ -2,8 +2,8 @@
 
 namespace Drupal\simplify\Tests;
 
-use Drupal\simpletest\WebTestBase;
 use Drupal\comment\Tests\CommentTestTrait;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Test simplify per comment-type settings.
@@ -12,7 +12,7 @@ use Drupal\comment\Tests\CommentTestTrait;
  *
  * @ingroup simplify
  */
-class PerCommentTypeSettingsTest extends WebTestBase {
+class PerCommentTypeSettingsTest extends BrowserTestBase {
   use CommentTestTrait;
 
   /**

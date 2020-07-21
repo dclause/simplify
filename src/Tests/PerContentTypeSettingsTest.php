@@ -2,7 +2,7 @@
 
 namespace Drupal\simplify\Tests;
 
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Test simplify per content-type settings.
@@ -11,7 +11,7 @@ use Drupal\simpletest\WebTestBase;
  *
  * @ingroup simplify
  */
-class PerContentTypeSettingsTest extends WebTestBase {
+class PerContentTypeSettingsTest extends BrowserTestBase {
 
   /**
    * Modules to enable.
