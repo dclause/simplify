@@ -391,6 +391,9 @@ function simplify_get_fields($type) {
       if (\Drupal::moduleHandler()->moduleExists('path')) {
         $fields['path_settings'] = t('URL path settings');
       }
+      if (\Drupal::moduleHandler()->moduleExists('content_translation')) {
+        $fields['content_translation'] = t('Content translation');
+      }
       // Third-party modules:
       if (\Drupal::moduleHandler()->moduleExists('domain')) {
         $fields['domain'] = t('Domain access');
@@ -424,6 +427,9 @@ function simplify_get_fields($type) {
       if (\Drupal::moduleHandler()->moduleExists('overlay')) {
         $fields['overlay_control'] = t('Administrative overlay');
       }
+      if (\Drupal::moduleHandler()->moduleExists('content_translation')) {
+        $fields['content_translation'] = t('Content translation');
+      }
       // Third-party modules:
       if (\Drupal::moduleHandler()->moduleExists('metatag')) {
         $fields['metatags'] = t('Meta tags');
@@ -446,6 +452,9 @@ function simplify_get_fields($type) {
       $fields['relations'] = t('Relations');
       if (\Drupal::moduleHandler()->moduleExists('path')) {
         $fields['path'] = t('URL alias');
+      }
+      if (\Drupal::moduleHandler()->moduleExists('content_translation')) {
+        $fields['content_translation'] = t('Content translation');
       }
       // Third-party modules:
       if (\Drupal::moduleHandler()->moduleExists('metatag')) {
