@@ -318,6 +318,27 @@ function simplify_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 }
 
 /**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ *
+ * Because of [#2937730] we want to visually-hidden the fields. The comment field
+ * in form display actually add the 'comment_default' widget which needs to be
+ * preprocessed to hide.
+ */
+function simplify_field_widget_comment_default_form_alter(&$element, FormStateInterface $form_state, $context) {
+    $node = $form_state->getFormObject()->getEntity();
+  $node_type = $node->type->entity;
+
+  // Get array of fields to hide.
+  $global_fields = _simplify_get_config_value('simplify_nodes_global');
+  $type_fields = _simplify_get_config_value('simplify_nodes', [], 'simplify.content_type.' . $node_type->get('type'));
+  $fields = array_merge($global_fields, $type_fields);
+
+  if ($fields['comment']) {
+    $element['#attributes']['class'][] = 'visually-hidden';
+  }
+}
+
+/**
  * Implements hook_module_implements_alter().
  *
  * Make sure that our form alter is called AFTER the same hook provided in xxx.
@@ -493,7 +514,7 @@ function simplify_hide_field(string $field, array &$form) {
 
     // Entity translation.
     case 'entity_translation':
-      $form['translation']['#access'] = FALSE;
+      $form['translation']['#attributes']['class'][] = 'visually-hidden';
       break;
 
     // Text format selection.
@@ -503,12 +524,11 @@ function simplify_hide_field(string $field, array &$form) {
 
     // Status.
     case 'status':
-      $form['account']['status']['#access'] = FALSE;
+      $form['account']['status']['#attributes']['class'][] = 'visually-hidden';
       break;
 
     default:
-      $form[$field]['#access'] = FALSE;
-
+      $form[$field]['#attributes']['class'][] = 'visually-hidden';
   }
 
   // Allow other modules to alter the way fields are hidden.
