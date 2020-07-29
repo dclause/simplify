@@ -395,7 +395,7 @@ function simplify_get_fields($type) {
         $fields['content_translation'] = t('Content translation');
       }
       // Third-party modules:
-      if (\Drupal::moduleHandler()->moduleExists('domain')) {
+      if (\Drupal::moduleHandler()->moduleExists('domain_access')) {
         $fields['domain'] = t('Domain access');
       }
       if (\Drupal::moduleHandler()->moduleExists('entity_translation') && entity_translation_enabled('node')) {
