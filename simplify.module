@@ -408,7 +408,7 @@ function simplify_get_fields($type) {
         $fields['node_noindex'] = t('Node noindex');
       }
       if (\Drupal::moduleHandler()->moduleExists('redirect')) {
-        $fields['redirect'] = t('URL redirects');
+        $fields['url_redirects'] = t('URL redirects');
       }
       if (\Drupal::moduleHandler()->moduleExists('xmlsitemap_node')) {
         $fields['xmlsitemap'] = t('XML sitemap');
@@ -435,7 +435,7 @@ function simplify_get_fields($type) {
         $fields['metatags'] = t('Meta tags');
       }
       if (\Drupal::moduleHandler()->moduleExists('redirect')) {
-        $fields['redirect'] = t('URL redirects');
+        $fields['url_redirects'] = t('URL redirects');
       }
       break;
 
@@ -461,7 +461,7 @@ function simplify_get_fields($type) {
         $fields['metatags'] = t('Meta tags');
       }
       if (\Drupal::moduleHandler()->moduleExists('redirect')) {
-        $fields['redirect'] = t('URL redirects');
+        $fields['url_redirects'] = t('URL redirects');
       }
       if (\Drupal::moduleHandler()->moduleExists('xmlsitemap_taxonomy')) {
         $fields['xmlsitemap'] = t('XML sitemap');
