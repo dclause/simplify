@@ -325,17 +325,30 @@ function simplify_form_alter(&$form, FormStateInterface $form_state, $form_id) {
  * preprocessed to hide.
  */
 function simplify_field_widget_comment_default_form_alter(&$element, FormStateInterface $form_state, $context) {
-    $node = $form_state->getFormObject()->getEntity();
-  $node_type = $node->type->entity;
+  $entity = $form_state->getFormObject()->getEntity();
+  $entity_type = $entity->getEntityTypeId();
+  $entity_bundle_type= NULL;
+  if ($entity instanceof \Drupal\Core\Entity\ContentEntityBase) {
+    $type = $entity->type;
+    $entity_bundle_type = $type ? $type->entity : NULL;
+  }
 
   // Get array of fields to hide.
-  $global_fields = _simplify_get_config_value('simplify_nodes_global');
-  $type_fields = _simplify_get_config_value('simplify_nodes', [], 'simplify.content_type.' . $node_type->get('type'));
+  $global_fields = _simplify_get_config_value("simplify_${entity_type}s_global");
+  $type_fields = $entity_bundle_type ? _simplify_get_config_value('simplify_nodes', [], 'simplify.content_type.' . $entity_bundle_type->get('type')) : [];
   $fields = array_merge($global_fields, $type_fields);
 
-  if ($fields['comment']) {
+  if (isset($fields['comment']) && $fields['comment']) {
     $element['#attributes']['class'][] = 'visually-hidden';
+    $element['status']['#attributes']['class'][] = 'visually-hidden';
   }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function simplify_field_widget_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+  //dsm($context);
 }
 
 /**
@@ -430,7 +443,13 @@ function simplify_get_fields($type) {
       if (\Drupal::moduleHandler()->moduleExists('content_translation')) {
         $fields['content_translation'] = t('Content translation');
       }
+      if (\Drupal::moduleHandler()->moduleExists('comment')) {
+        $fields['comment'] = t('Comment settings');
+      }
       // Third-party modules:
+      if (\Drupal::moduleHandler()->moduleExists('domain_access')) {
+        $fields['domain'] = t('Domain access');
+      }
       if (\Drupal::moduleHandler()->moduleExists('metatag')) {
         $fields['metatags'] = t('Meta tags');
       }
@@ -458,6 +477,9 @@ function simplify_get_fields($type) {
       }
       if (\Drupal::moduleHandler()->moduleExists('content_translation')) {
         $fields['content_translation'] = t('Content translation');
+      }
+      if (\Drupal::moduleHandler()->moduleExists('comment')) {
+        $fields['comment'] = t('Comment settings');
       }
       // Third-party modules:
       if (\Drupal::moduleHandler()->moduleExists('metatag')) {
