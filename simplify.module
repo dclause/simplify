@@ -348,7 +348,7 @@ function simplify_field_widget_comment_default_form_alter(&$element, FormStateIn
  * Implements hook_field_widget_form_alter().
  */
 function simplify_field_widget_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
-  //dsm($context);
+
 }
 
 /**
@@ -549,6 +549,14 @@ function simplify_hide_field(string $field, array &$form) {
     // Entity translation.
     case 'entity_translation':
       $form['translation']['#attributes']['class'][] = 'visually-hidden';
+      break;
+
+    // Domain Access.
+    case 'domain':
+      $form['domain']['#attributes']['class'][] = 'visually-hidden';
+      $form['field_domain_access']['#attributes']['class'][] = 'visually-hidden';
+      $form['field_domain_admin']['#attributes']['class'][] = 'visually-hidden';
+      $form['field_domain_all_affiliates']['#attributes']['class'][] = 'visually-hidden';
       break;
 
     // Text format selection.
