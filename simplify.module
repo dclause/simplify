@@ -549,7 +549,7 @@ function simplify_hide_field(string $field, array &$form) {
 
     // Node meta.
     case 'meta':
-      $form['meta']['#attributes']['class'][] = 'visually-hidden';
+      $form['meta']['#access'] = FALSE;
       break;
 
     // Entity translation.
