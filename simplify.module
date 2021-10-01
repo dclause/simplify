@@ -434,6 +434,7 @@ function simplify_get_fields($type) {
       $fields['format'] = t('Text format selection');
       $fields['status'] = t('Status (blocked/active)');
       $fields['timezone'] = t('Locale settings');
+      $fields['meta'] = t('Status metadata');
       if (\Drupal::moduleHandler()->moduleExists('contact')) {
         $fields['contact'] = t('Contact settings');
       }
@@ -545,6 +546,11 @@ function simplify_hide_fields(array $fields, array &$form) {
  */
 function simplify_hide_field(string $field, array &$form) {
   switch ($field) {
+
+    // Node meta.
+    case 'meta':
+      $form['meta']['#access'] = FALSE;
+      break;
 
     // Entity translation.
     case 'entity_translation':
