@@ -392,6 +392,7 @@ function simplify_get_fields($type) {
       $fields['format'] = t('Text format selection');
       $fields['options'] = t('Promotion options');
       $fields['revision_information'] = t('Revision information');
+      $fields['meta'] = t('Status metadata');
       if (\Drupal::moduleHandler()->moduleExists('book')) {
         $fields['book'] = t('Book outline');
       }
@@ -434,7 +435,6 @@ function simplify_get_fields($type) {
       $fields['format'] = t('Text format selection');
       $fields['status'] = t('Status (blocked/active)');
       $fields['timezone'] = t('Locale settings');
-      $fields['meta'] = t('Status metadata');
       if (\Drupal::moduleHandler()->moduleExists('contact')) {
         $fields['contact'] = t('Contact settings');
       }
@@ -549,7 +549,7 @@ function simplify_hide_field(string $field, array &$form) {
 
     // Node meta.
     case 'meta':
-      $form['meta']['#access'] = FALSE;
+      $form['meta']['#attributes']['class'][] = 'visually-hidden';
       break;
 
     // Entity translation.
