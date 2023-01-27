@@ -19,7 +19,7 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['block_content', 'editor', 'simplify'];
+  protected static $modules = ['block_content', 'editor', 'simplify'];
 
   /**
    * {@inheritdoc}
@@ -35,7 +35,7 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create an admin user.
@@ -56,8 +56,8 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
      */
     $this->drupalGet('block/add');
 
-    $this->assertRaw('About text formats', 'Text format option is defined.');
-    $this->assertRaw('Revision information', 'Revision option is defined.');
+    $this->assertSession()->responseContains('About text formats');
+    $this->assertSession()->responseContains('Revision information');
 
     /* -------------------------------------------------------.
      * 1/ Check if everything is there but unchecked.
@@ -69,9 +69,9 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
       'simplify_admin' => TRUE,
       'simplify_blocks_global[format]' => 'format',
     ];
-    $this->drupalPostForm(NULL, $options, $this->t('Save configuration'));
+    $this->submitForm($options, $this->t('Save configuration'));
     // Admin users setting.
-    $this->assertFieldChecked('edit-simplify-admin', "Admin users can't see hidden fields too.");
+    $this->assertSession()->checkboxChecked('edit-simplify-admin', "Admin users can't see hidden fields too.");
 
     /* -------------------------------------------------------.
      * 2/ Check the effect on block-type settings.
@@ -81,8 +81,8 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
     $this->drupalGet('admin/structure/block/block-content/manage/testing_type');
 
     // Blocks.
-    $this->assertFieldChecked('edit-simplify-blocks-format', 'Block text format option is checked.');
-    $this->assertNoFieldChecked('edit-simplify-blocks-revision-information', 'Block revision information option is not checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-blocks-format', 'Block text format option is checked.');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-blocks-revision-information', 'Block revision information option is not checked.');
 
     /* -------------------------------------------------------.
      * 2-bis/ Check if everything is properly disabled if needed.
@@ -103,21 +103,21 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
     $options = [
       'simplify_blocks[revision_information]' => 'format',
     ];
-    $this->drupalPostForm(NULL, $options, $this->t('Save'));
+    $this->submitForm($options, $this->t('Save'));
 
     /* -------------------------------------------------------.
      * 3-bis/ Check if options are saved.
      */
     $this->drupalGet('/admin/structure/block/block-content/manage/testing_type');
-    $this->assertFieldChecked('edit-simplify-blocks-revision-information', 'Block revision information option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-blocks-revision-information', 'Block revision information option is checked.');
 
     /* -------------------------------------------------------.
      * 4/ Check The effect of all this on node form.
      */
     $this->drupalGet('block/add/testing_type');
 
-    $this->assertNoRaw('About text formats', 'Text format option is not defined.');
-    $this->assertNoRaw('Revision information', 'Revision option is not defined.');
+    $this->assertSession()->responseNotContains('About text formats');
+    $this->assertSession()->responseNotContains('Revision information');
   }
 
   /**

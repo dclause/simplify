@@ -27,7 +27,7 @@ class PerCommentTypeSettingsTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['node', 'comment', 'field_ui', 'simplify'];
+  protected static $modules = ['node', 'comment', 'field_ui', 'simplify'];
 
   /**
    * {@inheritdoc}
@@ -43,7 +43,7 @@ class PerCommentTypeSettingsTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create two test users.
@@ -86,7 +86,7 @@ class PerCommentTypeSettingsTest extends BrowserTestBase {
 
     // Check if options are there.
     $this->drupalGet("/node/" . $node->id());
-    $this->assertRaw('About text formats', 'Comment text format option is defined.');
+    $this->assertSession()->responseContains('About text formats');
 
     /* -------------------------------------------------------.
      * 1/ Activate some global options and check "per comment-type" accordingly.
@@ -98,13 +98,13 @@ class PerCommentTypeSettingsTest extends BrowserTestBase {
       'simplify_admin' => TRUE,
       'simplify_comments_global[format]' => 'format',
     ];
-    $this->drupalPostForm(NULL, $options, $this->t('Save configuration'));
+    $this->submitForm($options, $this->t('Save configuration'));
 
     // Open admin UI.
     $this->drupalGet('/admin/structure/comment/manage/comment');
 
     // Check if global options are forwarded.
-    $this->assertFieldChecked('edit-simplify-comments-format', 'Comment text fomat selection option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-comments-format', 'Comment text fomat selection option is checked.');
 
     // Check if everything is properly disabled if needed.
     $text_format = $this->xpath('//input[@name="simplify_comments[format]" and @disabled="disabled"]');
@@ -119,13 +119,13 @@ class PerCommentTypeSettingsTest extends BrowserTestBase {
       'simplify_admin' => TRUE,
       'simplify_comments_global[format]' => FALSE,
     ];
-    $this->drupalPostForm(NULL, $options, $this->t('Save configuration'));
+    $this->submitForm($options, $this->t('Save configuration'));
 
     // Open admin UI.
     $this->drupalGet('/admin/structure/comment/manage/comment');
 
     // Check if global options are forwarded.
-    $this->assertNoFieldChecked('edit-simplify-comments-format', 'Comment text fomat selection option is not checked.');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-comments-format', 'Comment text fomat selection option is not checked.');
 
     /* -------------------------------------------------------.
      * 3/ Save some custom options.
@@ -135,19 +135,19 @@ class PerCommentTypeSettingsTest extends BrowserTestBase {
     $options = [
       'simplify_comments[format]' => 'format',
     ];
-    $this->drupalPostForm(NULL, $options, $this->t('Save'));
+    $this->submitForm($options, $this->t('Save'));
 
     /* -------------------------------------------------------.
      * 4/ Check if options are saved.
      */
     $this->drupalGet('/admin/structure/comment/manage/comment');
-    $this->assertFieldChecked('edit-simplify-comments-format', 'Comment text fomat selection option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-comments-format', 'Comment text fomat selection option is checked.');
 
     /*
      * 5/ Check if comment form is now simplified.
      */
     $this->drupalGet("/node/" . $node->id());
-    $this->assertNoRaw('About text formats', 'Comment text format option is not defined.');
+    $this->assertSession()->responseNotContains('About text formats');
   }
 
 }
