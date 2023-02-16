@@ -397,7 +397,7 @@ function simplify_get_fields($type) {
         $fields['menu'] = t('Menu settings');
       }
       if (\Drupal::moduleHandler()->moduleExists('path')) {
-        $fields['path_settings'] = t('URL path settings');
+        $fields['path'] = t('URL path settings');
       }
       if (\Drupal::moduleHandler()->moduleExists('content_translation')) {
         $fields['content_translation'] = t('Content translation');
@@ -575,6 +575,11 @@ function simplify_hide_field(string $field, array &$form) {
       $form['account']['status']['#attributes']['class'][] = 'visually-hidden';
       break;
 
+    // Path.
+    case 'path':
+      $form['path']['widget'][0]['#after_build'][] = 'simplify_hide_path_element';
+      break;
+
     default:
       $form[$field]['#attributes']['class'][] = 'visually-hidden';
   }
@@ -613,6 +618,20 @@ function simplify_hide_text_format_element(array $element) {
   if (!empty($element['format'])) {
     $element['format']['#attributes']['class'][] = 'hidden';
   }
+  return $element;
+}
+
+/**
+ * Hide a given path element.
+ *
+ * @param array $element
+ *   The element to hide.
+ *
+ * @return array
+ *   The hidden element.
+ */
+function simplify_hide_path_element(array $element) {
+  $element['#attributes']['class'][] = 'visually-hidden';
   return $element;
 }
 
