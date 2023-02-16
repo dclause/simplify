@@ -19,7 +19,7 @@ class PerVocabularySettingsTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['path', 'taxonomy', 'simplify'];
+  protected static $modules = ['path', 'taxonomy', 'simplify'];
 
   /**
    * {@inheritdoc}
@@ -35,7 +35,7 @@ class PerVocabularySettingsTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $admin_user = $this->drupalCreateUser([
@@ -65,9 +65,9 @@ class PerVocabularySettingsTest extends BrowserTestBase {
 
     $this->drupalGet("/admin/structure/taxonomy/manage/testing_vocabulary/add");
 
-    $this->assertRaw('About text formats', 'Term edit text format option is defined.');
-    $this->assertRaw('Relations', 'Term Relations option is defined.');
-    $this->assertRaw('URL alias', 'Term URL alias option is defined.');
+    $this->assertSession()->responseContains('About text formats');
+    $this->assertSession()->responseContains('Relations');
+    $this->assertSession()->responseContains('URL alias');
 
     /* -------------------------------------------------------.
      * 1/ Per vocabulary settings.
@@ -79,15 +79,15 @@ class PerVocabularySettingsTest extends BrowserTestBase {
       'simplify_admin' => TRUE,
       'simplify_taxonomies_global[format]' => 'format',
     ];
-    $this->drupalPostForm(NULL, $options, $this->t('Save configuration'));
+    $this->submitForm($options, $this->t('Save configuration'));
 
     // Open vocabulary admin UI.
     $this->drupalGet('/admin/structure/taxonomy/manage/testing_vocabulary');
 
     // Check if everything is there and global options are considered.
-    $this->assertFieldChecked('edit-simplify-taxonomies-format', 'Vocabulary text fomat selection option is checked.');
-    $this->assertNoFieldChecked('edit-simplify-taxonomies-relations', 'Vocabulary relations option is not checked.');
-    $this->assertNoFieldChecked('edit-simplify-taxonomies-path', 'Vocabulary Path settings option is not checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-taxonomies-format', 'Vocabulary text fomat selection option is checked.');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-taxonomies-relations', 'Vocabulary relations option is not checked.');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-taxonomies-path', 'Vocabulary Path settings option is not checked.');
 
     // Check if everything is properly disabled if needed.
     $text_format = $this->xpath('//input[@name="simplify_taxonomies[format]" and @disabled="disabled"]');
@@ -104,21 +104,21 @@ class PerVocabularySettingsTest extends BrowserTestBase {
       'simplify_taxonomies[relations]' => 'relations',
       'simplify_taxonomies[path]' => 'path',
     ];
-    $this->drupalPostForm(NULL, $options, $this->t('Save'));
+    $this->submitForm($options, $this->t('Save'));
 
     // Check if options are saved.
     $this->drupalGet('/admin/structure/taxonomy/manage/testing_vocabulary');
-    $this->assertFieldChecked('edit-simplify-taxonomies-relations', 'Vocabulary relations option is checked.');
-    $this->assertFieldChecked('edit-simplify-taxonomies-path', 'Vocabulary URL alias option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-taxonomies-relations', 'Vocabulary relations option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-taxonomies-path', 'Vocabulary URL alias option is checked.');
 
     /* -------------------------------------------------------.
      * 2/ Check settings effect on "term edit" page.
      */
     $this->drupalGet("/admin/structure/taxonomy/manage/testing_vocabulary/add");
 
-    $this->assertNoRaw('About text formats', 'Term edit text format option is not defined.');
-    $this->assertNoRaw('Relations', 'Term Relations option is not defined.');
-    $this->assertNoRaw('URL alias', 'Term URL alias option is not defined.');
+    $this->assertSession()->responseNotContains('About text formats');
+    $this->assertSession()->responseNotContains('Relations');
+    $this->assertSession()->responseNotContains('URL alias');
   }
 
 }
