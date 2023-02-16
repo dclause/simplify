@@ -1,11 +1,11 @@
 <?php
 
-use Drupal\Core\Entity\ContentEntityBase;
 /**
  * @file
  * Hooks implemented by the simplify module.
  */
 
+use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
@@ -321,14 +321,14 @@ function simplify_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 /**
  * Implements hook_field_widget_WIDGET_TYPE_form_alter().
  *
- * Because of [#2937730] we want to visually-hidden the fields. The comment field
+ * Because of #2937730 we want to visually-hidden the fields. The comment field
  * in form display actually add the 'comment_default' widget which needs to be
  * preprocessed to hide.
  */
 function simplify_field_widget_comment_default_form_alter(&$element, FormStateInterface $form_state, $context) {
   $entity = $form_state->getFormObject()->getEntity();
   $entity_type = $entity->getEntityTypeId();
-  $entity_bundle_type= NULL;
+  $entity_bundle_type = NULL;
   if ($entity instanceof ContentEntityBase) {
     $type = $entity->type;
     $entity_bundle_type = $type ? $type->entity : NULL;
@@ -343,13 +343,6 @@ function simplify_field_widget_comment_default_form_alter(&$element, FormStateIn
     $element['#attributes']['class'][] = 'visually-hidden';
     $element['status']['#attributes']['class'][] = 'visually-hidden';
   }
-}
-
-/**
- * Implements hook_field_widget_form_alter().
- */
-function simplify_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
-
 }
 
 /**
