@@ -423,6 +423,9 @@ function simplify_get_fields($type) {
       if (\Drupal::moduleHandler()->moduleExists('redirect')) {
         $fields['url_redirects'] = t('URL redirects');
       }
+      if (\Drupal::moduleHandler()->moduleExists('simple_sitemap')) {
+        $fields['simple_sitemap'] = t('Simple XML Sitemap');
+      }
       if (\Drupal::moduleHandler()->moduleExists('xmlsitemap')) {
         $fields['xmlsitemap'] = t('XML sitemap');
       }
