@@ -117,7 +117,7 @@ function simplify_form_taxonomy_vocabulary_form_alter(&$form, FormStateInterface
     '#type' => 'details',
     '#title' => t('Simplify'),
     '#description' => t('These fields will be hidden from <em>@vocabulary</em> taxonomy term forms. Disabled checkboxes indicate fields that have been hidden globally on the <a href="@global">Simplify administration page</a>.', [
-      '@vocabulary' => $form['name']['#default_value'],
+      '@vocabulary' => $form['name']['#default_value'] ?? '',
       '@global' => Url::fromRoute('simplify.admin')->toString(),
     ]),
     '#access' => \Drupal::currentUser()->hasPermission('administer simplify'),
