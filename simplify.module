@@ -424,6 +424,9 @@ function simplify_get_fields($type) {
       if (\Drupal::moduleHandler()->moduleExists('xmlsitemap')) {
         $fields['xmlsitemap'] = t('XML sitemap');
       }
+      if (\Drupal::moduleHandler()->moduleExists('print')) {
+        $fields['print'] = t('Printer-friendly pages');
+      }
       break;
 
     // Users.
