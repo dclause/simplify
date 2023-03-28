@@ -335,7 +335,7 @@ function simplify_field_widget_comment_default_form_alter(&$element, FormStateIn
   }
 
   // Get array of fields to hide.
-  $global_fields = _simplify_get_config_value("simplify_${entity_type}s_global");
+  $global_fields = _simplify_get_config_value("simplify_{$entity_type}s_global");
   $type_fields = $entity_bundle_type ? _simplify_get_config_value('simplify_nodes', [], 'simplify.content_type.' . $entity_bundle_type->get('type')) : [];
   $fields = array_merge($global_fields, $type_fields);
 
