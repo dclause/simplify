@@ -580,6 +580,11 @@ function simplify_hide_field(string $field, array &$form) {
       $form['path']['widget'][0]['#after_build'][] = 'simplify_hide_path_element';
       break;
 
+    // Revision.
+    case 'revision_information':
+      $form['revision_information']['#access'] = FALSE;
+      break;
+
     default:
       $form[$field]['#attributes']['class'][] = 'visually-hidden';
   }
