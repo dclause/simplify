@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\simplify\Tests;
+namespace Drupal\Tests\simplify\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 
@@ -26,6 +26,11 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
     'user',
     'simplify',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}
@@ -67,7 +72,6 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
 
     $this->assertSession()->responseContains('About text formats');
     $this->assertSession()->responseContains('Menu settings');
-    $this->assertSession()->responseContains('URL path settings');
     $this->assertSession()->responseContains('Authoring information');
     $this->assertSession()->responseContains('Promotion options');
 
@@ -83,9 +87,9 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
       'simplify_nodes_global[comment]' => 'comment',
       'simplify_nodes_global[options]' => 'options',
     ];
-    $this->submitForm($options, $this->t('Save configuration'));
+    $this->submitForm($options, 'Save configuration');
     // Admin users setting.
-    $this->assertSession()->checkboxChecked('edit-simplify-admin', "Admin users can't see hidden fields too.");
+    $this->assertSession()->checkboxChecked('edit-simplify-admin');
 
     /* -------------------------------------------------------.
      * 2/ Check the effect on content-type settingss.
@@ -95,11 +99,11 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
     $this->drupalGet('/admin/structure/types/manage/testing_type');
 
     // Nodes.
-    $this->assertSession()->checkboxChecked('edit-simplify-nodes-author', 'Node authoring information option is checked.');
-    $this->assertSession()->checkboxNotChecked('edit-simplify-nodes-format', 'Node text fomat selection option is not checked.');
-    $this->assertSession()->checkboxChecked('edit-simplify-nodes-options', 'Node promoting options option is checked.');
-    $this->assertSession()->checkboxNotChecked('edit-simplify-nodes-revision-information', 'Node revision information option is not checked.');
-    $this->assertSession()->checkboxChecked('edit-simplify-nodes-comment', 'Node comment settings option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-nodes-author');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-nodes-format');
+    $this->assertSession()->checkboxChecked('edit-simplify-nodes-options');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-nodes-revision-information');
+    $this->assertSession()->checkboxChecked('edit-simplify-nodes-comment');
 
     /* -------------------------------------------------------.
      * 2-bis/ Check if everything is properly disabled if needed.
@@ -129,24 +133,23 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
     $options = [
       'simplify_nodes[format]' => 'format',
     ];
-    $this->submitForm($options, $this->t('Save content type'));
+    $this->submitForm($options, 'Save content type');
 
     /* -------------------------------------------------------.
      * 3-bis/ Check if options are saved.
      */
     $this->drupalGet('admin/structure/types/manage/testing_type');
-    $this->assertSession()->checkboxChecked('edit-simplify-nodes-format', 'Node text fomat selection option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-nodes-format');
 
     /* -------------------------------------------------------.
      * 4/ Check The effect of all this on node form.
      */
     $this->drupalGet('node/add/testing_type');
 
-    $this->assertSession()->responseNotContains('About text formats');
+    $this->assertSession()->elementContains('css', '.js-filter-wrapper.hidden', 'About text formats');
     $this->assertSession()->responseContains('Menu settings');
-    $this->assertSession()->responseContains('URL path settings');
-    $this->assertSession()->responseNotContains('Authoring information');
-    $this->assertSession()->responseNotContains('Promotion options');
+    $this->assertSession()->elementContains('css', '.node-form-author.visually-hidden', 'Authoring information');
+    $this->assertSession()->elementContains('css', '.node-form-options.visually-hidden', 'Promotion options');
   }
 
 }

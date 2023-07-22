@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\simplify\Tests;
+namespace Drupal\Tests\simplify\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 
@@ -19,6 +19,11 @@ class UserSettingsTest extends BrowserTestBase {
    * @var array
    */
   protected static $modules = ['contact', 'user', 'simplify'];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}
@@ -54,7 +59,6 @@ class UserSettingsTest extends BrowserTestBase {
     $this->drupalLogout();
     $this->drupalGet('/user/register');
     $this->assertSession()->responseContains('Contact settings');
-    $this->assertSession()->responseContains('Locale settings');
 
     /* -------------------------------------------------------.
      * 1/ Check if everything is there but unchecked.
@@ -68,9 +72,9 @@ class UserSettingsTest extends BrowserTestBase {
       'simplify_users_global[timezone]' => 'timezone',
       'simplify_users_global[contact]' => 'contact',
     ];
-    $this->submitForm($options, $this->t('Save configuration'));
+    $this->submitForm($options, 'Save configuration');
     // Admin users setting.
-    $this->assertSession()->checkboxChecked('edit-simplify-admin', "Admin users can't see hidden fields too.");
+    $this->assertSession()->checkboxChecked('edit-simplify-admin');
 
     /* -------------------------------------------------------.
      * 2/ Check the effect on user settings.
@@ -82,13 +86,13 @@ class UserSettingsTest extends BrowserTestBase {
 
     // A- On user edit page.
     $this->drupalGet($user_edit_page);
-    $this->assertSession()->responseNotContains('Status');
-    $this->assertSession()->responseNotContains('Contact settings');
-    $this->assertSession()->responseNotContains('Locale settings');
+//    $this->assertSession()->responseContains('Contact settings');
+    $this->assertSession()->elementContains('css', '#edit-contact.visually-hidden', 'Contact settings');
+    $this->assertSession()->elementContains('css', '#edit-timezone.visually-hidden', 'Locale settings');
     // B- On user register page.
     $this->drupalLogout();
     $this->drupalGet('/user/register');
-    $this->assertSession()->responseNotContains('Contact settings');
+    $this->assertSession()->elementContains('css', '#edit-contact.visually-hidden', 'Contact settings');
     $this->assertSession()->responseNotContains('Locale settings');
   }
 

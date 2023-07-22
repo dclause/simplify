@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\simplify\Tests;
+namespace Drupal\Tests\simplify\Functional;
 
 use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\Tests\BrowserTestBase;
@@ -28,6 +28,11 @@ class PerCommentTypeSettingsTest extends BrowserTestBase {
    * @var array
    */
   protected static $modules = ['node', 'comment', 'field_ui', 'simplify'];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}
@@ -98,13 +103,13 @@ class PerCommentTypeSettingsTest extends BrowserTestBase {
       'simplify_admin' => TRUE,
       'simplify_comments_global[format]' => 'format',
     ];
-    $this->submitForm($options, $this->t('Save configuration'));
+    $this->submitForm($options, 'Save configuration');
 
     // Open admin UI.
     $this->drupalGet('/admin/structure/comment/manage/comment');
 
     // Check if global options are forwarded.
-    $this->assertSession()->checkboxChecked('edit-simplify-comments-format', 'Comment text fomat selection option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-comments-format');
 
     // Check if everything is properly disabled if needed.
     $text_format = $this->xpath('//input[@name="simplify_comments[format]" and @disabled="disabled"]');
@@ -119,13 +124,13 @@ class PerCommentTypeSettingsTest extends BrowserTestBase {
       'simplify_admin' => TRUE,
       'simplify_comments_global[format]' => FALSE,
     ];
-    $this->submitForm($options, $this->t('Save configuration'));
+    $this->submitForm($options, 'Save configuration');
 
     // Open admin UI.
     $this->drupalGet('/admin/structure/comment/manage/comment');
 
     // Check if global options are forwarded.
-    $this->assertSession()->checkboxNotChecked('edit-simplify-comments-format', 'Comment text fomat selection option is not checked.');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-comments-format');
 
     /* -------------------------------------------------------.
      * 3/ Save some custom options.
@@ -135,19 +140,19 @@ class PerCommentTypeSettingsTest extends BrowserTestBase {
     $options = [
       'simplify_comments[format]' => 'format',
     ];
-    $this->submitForm($options, $this->t('Save'));
+    $this->submitForm($options, 'Save');
 
     /* -------------------------------------------------------.
      * 4/ Check if options are saved.
      */
     $this->drupalGet('/admin/structure/comment/manage/comment');
-    $this->assertSession()->checkboxChecked('edit-simplify-comments-format', 'Comment text fomat selection option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-comments-format');
 
     /*
      * 5/ Check if comment form is now simplified.
      */
     $this->drupalGet("/node/" . $node->id());
-    $this->assertSession()->responseNotContains('About text formats');
+    $this->assertSession()->elementContains('css', '.js-filter-wrapper.hidden', 'About text formats');
   }
 
 }

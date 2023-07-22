@@ -577,6 +577,7 @@ function simplify_hide_field(string $field, array &$form) {
 
     // Path.
     case 'path':
+      $form['path']['#attributes']['class'][] = 'visually-hidden';
       $form['path']['widget'][0]['#after_build'][] = 'simplify_hide_path_element';
       break;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\simplify\Tests;
+namespace Drupal\Tests\simplify\Functional;
 
 use Drupal\block_content\Entity\BlockContentType;
 use Drupal\Tests\BrowserTestBase;
@@ -20,6 +20,11 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
    * @var array
    */
   protected static $modules = ['block_content', 'editor', 'simplify'];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}
@@ -69,9 +74,9 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
       'simplify_admin' => TRUE,
       'simplify_blocks_global[format]' => 'format',
     ];
-    $this->submitForm($options, $this->t('Save configuration'));
+    $this->submitForm($options, 'Save configuration');
     // Admin users setting.
-    $this->assertSession()->checkboxChecked('edit-simplify-admin', "Admin users can't see hidden fields too.");
+    $this->assertSession()->checkboxChecked('edit-simplify-admin');
 
     /* -------------------------------------------------------.
      * 2/ Check the effect on block-type settings.
@@ -81,8 +86,8 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
     $this->drupalGet('admin/structure/block/block-content/manage/testing_type');
 
     // Blocks.
-    $this->assertSession()->checkboxChecked('edit-simplify-blocks-format', 'Block text format option is checked.');
-    $this->assertSession()->checkboxNotChecked('edit-simplify-blocks-revision-information', 'Block revision information option is not checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-blocks-format');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-blocks-revision-information');
 
     /* -------------------------------------------------------.
      * 2-bis/ Check if everything is properly disabled if needed.
@@ -103,20 +108,20 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
     $options = [
       'simplify_blocks[revision_information]' => 'format',
     ];
-    $this->submitForm($options, $this->t('Save'));
+    $this->submitForm($options, 'Save');
 
     /* -------------------------------------------------------.
      * 3-bis/ Check if options are saved.
      */
     $this->drupalGet('/admin/structure/block/block-content/manage/testing_type');
-    $this->assertSession()->checkboxChecked('edit-simplify-blocks-revision-information', 'Block revision information option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-blocks-revision-information');
 
     /* -------------------------------------------------------.
      * 4/ Check The effect of all this on node form.
      */
     $this->drupalGet('block/add/testing_type');
 
-    $this->assertSession()->responseNotContains('About text formats');
+    $this->assertSession()->elementContains('css', '.js-filter-wrapper.hidden', 'About text formats');
     $this->assertSession()->responseNotContains('Revision information');
   }
 

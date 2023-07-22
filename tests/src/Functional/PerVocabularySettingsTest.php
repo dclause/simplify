@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\simplify\Tests;
+namespace Drupal\Tests\simplify\Functional;
 
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\BrowserTestBase;
@@ -20,6 +20,11 @@ class PerVocabularySettingsTest extends BrowserTestBase {
    * @var array
    */
   protected static $modules = ['path', 'taxonomy', 'simplify'];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}
@@ -79,15 +84,15 @@ class PerVocabularySettingsTest extends BrowserTestBase {
       'simplify_admin' => TRUE,
       'simplify_taxonomies_global[format]' => 'format',
     ];
-    $this->submitForm($options, $this->t('Save configuration'));
+    $this->submitForm($options, 'Save configuration');
 
     // Open vocabulary admin UI.
     $this->drupalGet('/admin/structure/taxonomy/manage/testing_vocabulary');
 
     // Check if everything is there and global options are considered.
-    $this->assertSession()->checkboxChecked('edit-simplify-taxonomies-format', 'Vocabulary text fomat selection option is checked.');
-    $this->assertSession()->checkboxNotChecked('edit-simplify-taxonomies-relations', 'Vocabulary relations option is not checked.');
-    $this->assertSession()->checkboxNotChecked('edit-simplify-taxonomies-path', 'Vocabulary Path settings option is not checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-taxonomies-format');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-taxonomies-relations');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-taxonomies-path');
 
     // Check if everything is properly disabled if needed.
     $text_format = $this->xpath('//input[@name="simplify_taxonomies[format]" and @disabled="disabled"]');
@@ -104,21 +109,21 @@ class PerVocabularySettingsTest extends BrowserTestBase {
       'simplify_taxonomies[relations]' => 'relations',
       'simplify_taxonomies[path]' => 'path',
     ];
-    $this->submitForm($options, $this->t('Save'));
+    $this->submitForm($options, 'Save');
 
     // Check if options are saved.
     $this->drupalGet('/admin/structure/taxonomy/manage/testing_vocabulary');
-    $this->assertSession()->checkboxChecked('edit-simplify-taxonomies-relations', 'Vocabulary relations option is checked.');
-    $this->assertSession()->checkboxChecked('edit-simplify-taxonomies-path', 'Vocabulary URL alias option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-taxonomies-relations');
+    $this->assertSession()->checkboxChecked('edit-simplify-taxonomies-path');
 
     /* -------------------------------------------------------.
      * 2/ Check settings effect on "term edit" page.
      */
     $this->drupalGet("/admin/structure/taxonomy/manage/testing_vocabulary/add");
 
-    $this->assertSession()->responseNotContains('About text formats');
-    $this->assertSession()->responseNotContains('Relations');
-    $this->assertSession()->responseNotContains('URL alias');
+    $this->assertSession()->elementContains('css', '.js-filter-wrapper.hidden', 'About text formats');
+    $this->assertSession()->elementContains('css', '.js-form-wrapper.visually-hidden', 'Relations');
+    $this->assertSession()->elementContains('css', '.field--name-path.visually-hidden', 'URL alias');
   }
 
 }
