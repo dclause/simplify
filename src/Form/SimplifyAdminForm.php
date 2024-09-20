@@ -29,7 +29,7 @@ class SimplifyAdminForm extends ConfigFormBase {
    *   The module handler service.
    */
   public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
-    parent::__construct($config_factory);
+    $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
   }
 
