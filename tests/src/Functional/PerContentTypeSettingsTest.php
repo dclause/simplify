@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\simplify\Tests;
+namespace Drupal\Tests\simplify\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 
@@ -18,7 +18,7 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'path',
     'menu_ui',
     'comment',
@@ -26,6 +26,11 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
     'user',
     'simplify',
   ];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}
@@ -41,7 +46,7 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create an admin user.
@@ -65,11 +70,10 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
      */
     $this->drupalGet('node/add/testing_type');
 
-    $this->assertRaw('About text formats', 'Text format option is defined.');
-    $this->assertRaw('Menu settings', 'Menu settings option is defined.');
-    $this->assertRaw('URL path settings', 'URL path settings option is defined.');
-    $this->assertRaw('Authoring information', 'Authoring information option is defined.');
-    $this->assertRaw('Promotion options', 'Promotion options option is defined.');
+    $this->assertSession()->responseContains('About text formats');
+    $this->assertSession()->responseContains('Menu settings');
+    $this->assertSession()->responseContains('Authoring information');
+    $this->assertSession()->responseContains('Promotion options');
 
     /* -------------------------------------------------------.
      * 1/ Check if everything is there but unchecked.
@@ -83,9 +87,9 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
       'simplify_nodes_global[comment]' => 'comment',
       'simplify_nodes_global[options]' => 'options',
     ];
-    $this->drupalPostForm(NULL, $options, $this->t('Save configuration'));
+    $this->submitForm($options, 'Save configuration');
     // Admin users setting.
-    $this->assertFieldChecked('edit-simplify-admin', "Admin users can't see hidden fields too.");
+    $this->assertSession()->checkboxChecked('edit-simplify-admin');
 
     /* -------------------------------------------------------.
      * 2/ Check the effect on content-type settingss.
@@ -95,11 +99,11 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
     $this->drupalGet('/admin/structure/types/manage/testing_type');
 
     // Nodes.
-    $this->assertFieldChecked('edit-simplify-nodes-author', 'Node authoring information option is checked.');
-    $this->assertNoFieldChecked('edit-simplify-nodes-format', 'Node text fomat selection option is not checked.');
-    $this->assertFieldChecked('edit-simplify-nodes-options', 'Node promoting options option is checked.');
-    $this->assertNoFieldChecked('edit-simplify-nodes-revision-information', 'Node revision information option is not checked.');
-    $this->assertFieldChecked('edit-simplify-nodes-comment', 'Node comment settings option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-nodes-author');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-nodes-format');
+    $this->assertSession()->checkboxChecked('edit-simplify-nodes-options');
+    $this->assertSession()->checkboxNotChecked('edit-simplify-nodes-revision-information');
+    $this->assertSession()->checkboxChecked('edit-simplify-nodes-comment');
 
     /* -------------------------------------------------------.
      * 2-bis/ Check if everything is properly disabled if needed.
@@ -129,24 +133,23 @@ class PerContentTypeSettingsTest extends BrowserTestBase {
     $options = [
       'simplify_nodes[format]' => 'format',
     ];
-    $this->drupalPostForm(NULL, $options, $this->t('Save content type'));
+    $this->submitForm($options, 'Save content type');
 
     /* -------------------------------------------------------.
      * 3-bis/ Check if options are saved.
      */
     $this->drupalGet('admin/structure/types/manage/testing_type');
-    $this->assertFieldChecked('edit-simplify-nodes-format', 'Node text fomat selection option is checked.');
+    $this->assertSession()->checkboxChecked('edit-simplify-nodes-format');
 
     /* -------------------------------------------------------.
      * 4/ Check The effect of all this on node form.
      */
     $this->drupalGet('node/add/testing_type');
 
-    $this->assertNoRaw('About text formats', 'Text format option is not defined.');
-    $this->assertRaw('Menu settings', 'Menu settings option is defined.');
-    $this->assertRaw('URL path settings', 'URL path settings option is defined.');
-    $this->assertNoRaw('Authoring information', 'Authoring information option is not defined.');
-    $this->assertNoRaw('Promotion options', 'Promotion options option is not defined.');
+    $this->assertSession()->elementContains('css', '.js-filter-wrapper.hidden', 'About text formats');
+    $this->assertSession()->responseContains('Menu settings');
+    $this->assertSession()->elementContains('css', '.node-form-author.visually-hidden', 'Authoring information');
+    $this->assertSession()->elementContains('css', '.node-form-options.visually-hidden', 'Promotion options');
   }
 
 }

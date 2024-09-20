@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\simplify\Tests;
+namespace Drupal\Tests\simplify\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 
@@ -18,7 +18,12 @@ class UserSettingsTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['contact', 'user', 'simplify'];
+  protected static $modules = ['contact', 'user', 'simplify'];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * {@inheritdoc}
@@ -47,14 +52,13 @@ class UserSettingsTest extends BrowserTestBase {
      */
     // A- On user edit page.
     $this->drupalGet($user_edit_page);
-    $this->assertRaw('Status', 'Status option is defined.');
-    $this->assertRaw('Contact settings', 'Contact settings option is defined.');
-    $this->assertRaw('Locale settings', 'Locale settings option is defined.');
+    $this->assertSession()->responseContains('Status');
+    $this->assertSession()->responseContains('Contact settings');
+    $this->assertSession()->responseContains('Locale settings');
     // B- On user register page.
     $this->drupalLogout();
     $this->drupalGet('/user/register');
-    $this->assertRaw('Contact settings', 'Contact settings option is defined.');
-    $this->assertRaw('Locale settings', 'Locale settings option is defined.');
+    $this->assertSession()->responseContains('Contact settings');
 
     /* -------------------------------------------------------.
      * 1/ Check if everything is there but unchecked.
@@ -68,9 +72,9 @@ class UserSettingsTest extends BrowserTestBase {
       'simplify_users_global[timezone]' => 'timezone',
       'simplify_users_global[contact]' => 'contact',
     ];
-    $this->drupalPostForm(NULL, $options, $this->t('Save configuration'));
+    $this->submitForm($options, 'Save configuration');
     // Admin users setting.
-    $this->assertFieldChecked('edit-simplify-admin', "Admin users can't see hidden fields too.");
+    $this->assertSession()->checkboxChecked('edit-simplify-admin');
 
     /* -------------------------------------------------------.
      * 2/ Check the effect on user settings.
@@ -82,14 +86,14 @@ class UserSettingsTest extends BrowserTestBase {
 
     // A- On user edit page.
     $this->drupalGet($user_edit_page);
-    $this->assertNoRaw('Status', 'Status option is not defined');
-    $this->assertNoRaw('Contact settings', 'Contact settings option is not defined.');
-    $this->assertNoRaw('Locale settings', 'Locale settings option is not defined.');
+//    $this->assertSession()->responseContains('Contact settings');
+    $this->assertSession()->elementContains('css', '#edit-contact.visually-hidden', 'Contact settings');
+    $this->assertSession()->elementContains('css', '#edit-timezone.visually-hidden', 'Locale settings');
     // B- On user register page.
     $this->drupalLogout();
     $this->drupalGet('/user/register');
-    $this->assertNoRaw('Contact settings', 'Contact settings option is not defined.');
-    $this->assertNoRaw('Locale settings', 'Locale settings option is not defined.');
+    $this->assertSession()->elementContains('css', '#edit-contact.visually-hidden', 'Contact settings');
+    $this->assertSession()->responseNotContains('Locale settings');
   }
 
 }
