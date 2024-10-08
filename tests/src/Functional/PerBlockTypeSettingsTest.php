@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\simplify\Functional;
 
-use Drupal\block_content\Entity\BlockContentType;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\block_content\Entity\BlockContentType;
 
 /**
  * Test simplify per block-type settings.
@@ -83,7 +83,7 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
      */
 
     // Open admin UI.
-    $this->drupalGet('admin/structure/block/block-content/manage/testing_type');
+    $this->drupalGet('admin/structure/block-content/manage/testing_type');
 
     // Blocks.
     $this->assertSession()->checkboxChecked('edit-simplify-blocks-format');
@@ -113,7 +113,7 @@ class PerBlockTypeSettingsTest extends BrowserTestBase {
     /* -------------------------------------------------------.
      * 3-bis/ Check if options are saved.
      */
-    $this->drupalGet('/admin/structure/block/block-content/manage/testing_type');
+    $this->drupalGet('/admin/structure/block-content/manage/testing_type');
     $this->assertSession()->checkboxChecked('edit-simplify-blocks-revision-information');
 
     /* -------------------------------------------------------.
