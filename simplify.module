@@ -225,6 +225,7 @@ function simplify_form_node_form_alter(&$form, FormStateInterface $form_state) {
 function simplify_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Get array of fields to hide.
   $fields = _simplify_get_config_value('simplify_users_global');
+
   // Hide fields.
   simplify_hide_fields($fields, $form);
 }
@@ -319,30 +320,18 @@ function simplify_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 }
 
 /**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ * Implements hook_field_widget_complete_WIDGET_TYPE_form_alter().
  *
  * Because of #2937730 we want to visually-hidden the fields. The comment field
  * in form display actually add the 'comment_default' widget which needs to be
  * preprocessed to hide.
  */
-function simplify_field_widget_comment_default_form_alter(&$element, FormStateInterface $form_state, $context) {
-  $entity = $form_state->getFormObject()->getEntity();
-  $entity_type = $entity->getEntityTypeId();
-  $entity_bundle_type = NULL;
-  if ($entity instanceof ContentEntityBase) {
-    $type = $entity->type;
-    $entity_bundle_type = $type ? $type->entity : NULL;
-  }
+function simplify_field_widget_complete_comment_default_form_alter(&$element, FormStateInterface $form_state, $context) {
+  simplify_hide_widget('comment', $element, $form_state);
+}
 
-  // Get array of fields to hide.
-  $global_fields = _simplify_get_config_value("simplify_{$entity_type}s_global");
-  $type_fields = $entity_bundle_type ? _simplify_get_config_value('simplify_nodes', [], 'simplify.content_type.' . $entity_bundle_type->get('type')) : [];
-  $fields = array_merge($global_fields, $type_fields);
-
-  if (isset($fields['comment']) && $fields['comment']) {
-    $element['#attributes']['class'][] = 'visually-hidden';
-    $element['status']['#attributes']['class'][] = 'visually-hidden';
-  }
+function simplify_field_widget_complete_metatag_firehose_form_alter(&$element, FormStateInterface $form_state, $context) {
+  simplify_hide_widget('metatags', $element, $form_state);
 }
 
 /**
@@ -544,11 +533,6 @@ function simplify_hide_fields(array $fields, array &$form) {
 function simplify_hide_field(string $field, array &$form) {
   switch ($field) {
 
-    // Comment.
-    case 'comment':
-      $form['comment']['#access'] = FALSE;
-      break;
-
     // Node meta.
     case 'meta':
       $form['meta']['#attributes']['class'][] = 'visually-hidden';
@@ -593,6 +577,25 @@ function simplify_hide_field(string $field, array &$form) {
 
   // Allow other modules to alter the way fields are hidden.
   \Drupal::moduleHandler()->alter('simplify_hide_field', $form, $field);
+}
+
+function simplify_hide_widget(string $name, array &$form, FormStateInterface $form_state) {
+  $entity = $form_state->getFormObject()->getEntity();
+  $entity_type = $entity->getEntityTypeId();
+  $entity_bundle_type = NULL;
+  if ($entity instanceof ContentEntityBase) {
+    $type = $entity->type;
+    $entity_bundle_type = $type ? $type->entity : NULL;
+  }
+
+  // Get array of fields to hide.
+  $global_fields = _simplify_get_config_value("simplify_{$entity_type}s_global");
+  $type_fields = $entity_bundle_type ? _simplify_get_config_value('simplify_nodes', [], 'simplify.content_type.' . $entity_bundle_type->get('type')) : [];
+  $fields = array_merge($global_fields, $type_fields);
+
+  if (in_array($name, $fields)) {
+    $form['widget'][0]['#attributes']['class'][] = 'visually-hidden';
+  }
 }
 
 /**
