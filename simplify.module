@@ -373,7 +373,7 @@ function simplify_module_implements_alter(&$implementations, $hook) {
  *   The category type of fields to build.
  *
  * @return array
- *   An array of cehckbox option fields.
+ *   An array of checkbox option fields.
  */
 function simplify_get_fields($type) {
   $fields = [];
@@ -405,9 +405,6 @@ function simplify_get_fields($type) {
       // Third-party modules:
       if (\Drupal::moduleHandler()->moduleExists('domain_access')) {
         $fields['domain'] = t('Domain access');
-      }
-      if (\Drupal::moduleHandler()->moduleExists('entity_translation') && entity_translation_enabled('node')) {
-        $fields['entity_translation'] = t('Entity translation');
       }
       if (\Drupal::moduleHandler()->moduleExists('metatag')) {
         $fields['metatags'] = t('Meta tags');
@@ -473,6 +470,7 @@ function simplify_get_fields($type) {
       // Drupal core:
       $fields['format'] = t('Text format selection');
       $fields['relations'] = t('Relations');
+      $fields['revision_information'] = t('Revision information');
       if (\Drupal::moduleHandler()->moduleExists('path')) {
         $fields['path'] = t('URL alias');
       }
@@ -529,7 +527,7 @@ function simplify_hide_fields(array $fields, array &$form) {
   $hide_to_admin = _simplify_get_config_value('simplify_admin', 0);
 
   // Depending on previous settings, simplify the $fields in the $form.
-  if (!empty($fields) && (!$user_can_view_hidden || (_is_user_admin() && $hide_to_admin))) {
+  if (!empty($fields) && (!$user_can_view_hidden || (_simplify_is_user_admin() && $hide_to_admin))) {
     foreach ($fields as $field) {
       simplify_hide_field($field, $form);
     }
@@ -577,8 +575,7 @@ function simplify_hide_field(string $field, array &$form) {
 
     // Path.
     case 'path':
-      $form['path']['#attributes']['class'][] = 'visually-hidden';
-      $form['path']['widget'][0]['#after_build'][] = 'simplify_hide_path_element';
+      $form['path']['#access'] = FALSE;
       break;
 
     // Revision.
@@ -598,7 +595,7 @@ function simplify_hide_field(string $field, array &$form) {
  * Recurse through the provided form and hide any text_format elements.
  *
  * @param array $form
- *   The form in which to interate to hide the text_format elements.
+ *   The form in which to iterate to hide the text_format elements.
  */
 function simplify_hide_text_format_elements(array &$form) {
   foreach (Element::children($form) as $key) {
@@ -627,20 +624,6 @@ function simplify_hide_text_format_element(array $element) {
   return $element;
 }
 
-/**
- * Hide a given path element.
- *
- * @param array $element
- *   The element to hide.
- *
- * @return array
- *   The hidden element.
- */
-function simplify_hide_path_element(array $element) {
-  $element['#attributes']['class'][] = 'visually-hidden';
-  return $element;
-}
-
 /* ---------------------------------------------------------------------------*\
  *                            HELPER METHODS                                  *
  * ---------------------------------------------------------------------------*/
@@ -654,7 +637,7 @@ function _simplify_disable_globally_hidden_checkboxes($element, &$form_state) {
 
   // Disable any globally hidden fields.
   foreach (Element::children($element) as $field) {
-    if (in_array($field, $global_fields) && $global_fields[$field]) {
+    if (in_array($field, $global_fields)) {
       $element[$field]['#checked'] = TRUE;
       $element[$field]['#attributes']['disabled'] = 'disabled';
     }
@@ -688,7 +671,7 @@ function _simplify_get_config_value($config_key, $default = [], $config_name = '
  * @return bool
  *   TRUE is super admin or user1, FALSE otherwise.
  */
-function _is_user_admin() {
+function _simplify_is_user_admin() {
   $user = \Drupal::currentUser();
   if ($user->id() == 1) {
     return TRUE;
