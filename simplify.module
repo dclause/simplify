@@ -520,7 +520,6 @@ function simplify_get_fields($type) {
  *   The form in which to simplify the given fields.
  */
 function simplify_hide_fields(array $fields, array &$form) {
-
   // Check if current user can view the hidden fields.
   $user_can_view_hidden = \Drupal::currentUser()->hasPermission('view hidden fields');
   // Check if even admin users must be simplified.
@@ -544,6 +543,11 @@ function simplify_hide_fields(array $fields, array &$form) {
  */
 function simplify_hide_field(string $field, array &$form) {
   switch ($field) {
+
+    // Comment.
+    case 'comment':
+      $form['comment']['#access'] = FALSE;
+      break;
 
     // Node meta.
     case 'meta':
