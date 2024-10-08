@@ -580,7 +580,7 @@ function simplify_hide_field(string $field, array &$form) {
 
     // Revision.
     case 'revision_information':
-      $form['revision_information']['#access'] = FALSE;
+      $form['revision_information']['#attributes']['class'][] = 'visually-hidden';
       break;
 
     default:
