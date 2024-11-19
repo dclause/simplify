@@ -583,7 +583,10 @@ function simplify_hide_field(string $field, array &$form) {
 
     // Revision.
     case 'revision_information':
-      $form['revision_information']['#attributes']['class'][] = 'visually-hidden';
+      $form['revision']['#type'] = 'hidden';
+      $form['revision']['#value'] = $form['revision']['#default_value'];
+      $form['revision_log']['#type'] = 'hidden';
+      $form['revision_information']['#type'] = 'hidden';
       break;
 
     default:
