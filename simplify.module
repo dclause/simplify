@@ -203,6 +203,10 @@ function simplify_form_block_content_type_edit_form_submit($form, FormStateInter
  * Overrides the node creation form to hide elements depending on settings.
  */
 function simplify_form_node_form_alter(&$form, FormStateInterface $form_state) {
+  // Check whether the method exists before continuing.
+  if (!method_exists($form_state->getFormObject(), 'getEntity')) {
+    return;
+  }
   // @todo This must be handled in a #process handler.
   $node = $form_state->getFormObject()->getEntity();
   $node_type = $node->type->entity;
