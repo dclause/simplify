@@ -589,6 +589,9 @@ function simplify_hide_field(string $field, array &$form) {
 }
 
 function simplify_hide_widget(string $name, array &$form, FormStateInterface $form_state) {
+  if (!method_exists($form_state->getFormObject(), 'getEntity')) {
+    return;
+  }
   $entity = $form_state->getFormObject()->getEntity();
   $entity_type = $entity->getEntityTypeId();
   $entity_bundle_type = NULL;
