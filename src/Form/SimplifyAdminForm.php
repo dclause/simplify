@@ -2,11 +2,9 @@
 
 namespace Drupal\simplify\Form;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure simplify global configurations.
@@ -16,31 +14,17 @@ class SimplifyAdminForm extends ConfigFormBase {
   /**
    * The module handler service.
    *
-   * @var \Drupal\Core\Extension\ModuleHandler
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
-
-  /**
-   * Constructs a SimplifyAdminForm object.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The factory for configuration objects.
-   * @param \Drupal\Core\Extension\ModuleHandler $module_handler
-   *   The module handler service.
-   */
-  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandler $module_handler) {
-    parent::__construct($config_factory);
-    $this->moduleHandler = $module_handler;
-  }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('module_handler')
-    );
+    $instance = parent::create($container);
+    $instance->moduleHandler = $container->get('module_handler');
+    return $instance;
   }
 
   /**
@@ -181,12 +165,18 @@ class SimplifyAdminForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->configFactory->getEditable('simplify.global')
       ->set('simplify_admin', $form_state->getValue('simplify_admin'))
-      ->set('simplify_nodes_global', $this->getFormValue($form_state, 'simplify_nodes_global'))
-      ->set('simplify_users_global', $this->getFormValue($form_state, 'simplify_users_global'))
-      ->set('simplify_comments_global', $this->getFormValue($form_state, 'simplify_comments_global'))
-      ->set('simplify_taxonomies_global', $this->getFormValue($form_state, 'simplify_taxonomies_global'))
-      ->set('simplify_blocks_global', $this->getFormValue($form_state, 'simplify_blocks_global'))
-      ->set('simplify_profiles_global', $this->getFormValue($form_state, 'simplify_profiles_global'))
+      ->set('simplify_nodes_global', array_keys(array_filter(
+        $this->getFormValue($form_state, 'simplify_nodes_global'))))
+      ->set('simplify_users_global', array_keys(array_filter(
+        $this->getFormValue($form_state, 'simplify_users_global'))))
+      ->set('simplify_comments_global', array_keys(array_filter(
+        $this->getFormValue($form_state, 'simplify_comments_global'))))
+      ->set('simplify_taxonomies_global', array_keys(array_filter(
+        $this->getFormValue($form_state, 'simplify_taxonomies_global'))))
+      ->set('simplify_blocks_global', array_keys(array_filter(
+        $this->getFormValue($form_state, 'simplify_blocks_global'))))
+      ->set('simplify_profiles_global', array_keys(array_filter(
+        $this->getFormValue($form_state, 'simplify_profiles_global'))))
       ->save();
 
     parent::submitForm($form, $form_state);
@@ -195,7 +185,7 @@ class SimplifyAdminForm extends ConfigFormBase {
   /**
    * Gets an array representing the configuration form values.
    *
-   * @param Drupal\Core\Form\FormStateInterface $form_state
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state array.
    * @param string $config_name
    *   The configuration name to be retrieved.
